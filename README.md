@@ -35,6 +35,7 @@ $ hexo deploy
 ```
 
 ## 目录结构
+```
 .
 ├── _config.yml   全局配置信息
 ├── package.json  应用程序的信息
@@ -43,3 +44,4 @@ $ hexo deploy
 |   ├── _drafts
 |   └── _posts
 └── themes        主题文件夹
+```

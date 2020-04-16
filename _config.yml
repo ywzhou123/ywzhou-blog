@@ -99,5 +99,5 @@ theme: book
 ## Docs: https://hexo.io/docs/deployment.html
 deploy:
   type: git
-  repository: git@github.com:ywzhou123/ywzhou-blog.git
+  repository: git@github.com:ywzhou123/ywzhou123.github.io.git
   branch: master
