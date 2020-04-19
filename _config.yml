@@ -3,17 +3,17 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: YwzhouBlog
-subtitle: 周有为的个人博客
-description: ''
+title: 月晴星飞
+subtitle: 月晴星飞的个人博客
+description: '月晴星飞的个人博客'
 keywords: javascript react vue java python django shell
-author: Ywzhou
+author: 月晴星飞
 language: zh-CN
 timezone: 'Asia/Shanghai'
 
 # URL
 ## If your site is put in a subdirectory, set url as 'http://yoursite.com/child' and root as '/child/'
-url: http://blog.ywzhou.shop
+url: https://ywzhou123.github.io/
 root: /
 permalink: :year/:month/:day/:title/
 permalink_defaults:
@@ -45,8 +45,10 @@ post_asset_folder: false
 relative_link: false
 future: true
 highlight:
-  enable: true
-  line_number: true
+  enable: false
+  line_number: false
+  # enable: true
+  # line_number: true
   auto_detect: false
   tab_replace: ''
   wrap: true
@@ -62,7 +64,7 @@ index_generator:
   order_by: -date
 
 # Category & Tag
-default_category: uncategorized
+default_category: javascript java python vue react es6 scss
 category_map:
 tag_map:
 
@@ -93,7 +95,7 @@ ignore:
 # Extensions
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
-theme: book
+theme: snark
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
