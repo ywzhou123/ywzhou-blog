@@ -1,6 +1,6 @@
 # config
-description: "天行健，君子以自强不息；<br>地势坤，君子以厚德载物。"
-
+# description: "天行健，君子以自强不息；<br>地势坤，君子以厚德载物。"
+description: "夫君子之行，静以修身，俭以养德。<br>非澹泊无以明志， 非宁静无以致远。"
 # comment system
 valine: ## https://valine.js.org
   enable: true ## If you want to use Valine comment system, please set the value to true.
