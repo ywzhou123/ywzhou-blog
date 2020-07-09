@@ -1,0 +1,238 @@
+# 一、单体架构
+
+## 1、启动项目
+
+1. 创建maven项目
+	com.imooc.foodie-dev
+2. 创建子模块
+	com.imooc.foodie-dev-common
+	com.imooc.foodie-dev-pojo
+	com.imooc.foodie-dev-mapping
+	com.imooc.foodie-dev-service
+	com.imooc.foodie-dev-api
+3.配置pom
+		以上子模块中的pom依次依赖其上的模块
+		根pom.xml:
+		```
+		    <groupId>com.imooc</groupId>
+		    <artifactId>foodie-dev</artifactId>
+		    <version>1.0-SNAPSHOT</version>
+		    <modules>
+		        <module>foodie-dev-common</module>
+		        <module>foodie-dev-pojo</module>
+		        <module>foodie-dev-mapper</module>
+		        <module>foodie-dev-service</module>
+		        <module>foodie-dev-api</module>
+		    </modules>
+		    <packaging>pom</packaging>
+		    <!--  引入依赖 parent-->
+		    <parent>
+		        <groupId>org.springframework.boot</groupId>
+		        <artifactId>spring-boot-starter-parent</artifactId>
+		        <version>2.2.1.RELEASE</version>
+		        <relativePath/> <!-- lookup parent from repository -->
+		    </parent>
+		    <!--  设置资源属性  -->
+		    <properties>
+		        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+		        <java.version>1.8</java.version>
+		    </properties>
+		    <dependencies>
+		        <dependency>
+		            <groupId>org.springframework.boot</groupId>
+		            <artifactId>spring-boot-starter-web</artifactId>
+		        </dependency>
+		        <dependency>
+		            <groupId>org.springframework.boot<
+		            /groupId>
+		            <artifactId>spring-boot-configuration-processor</artifactId>
+		            <optional>true</optional>
+		        </dependency>
+		    </dependencies>
+		```
+	在foodie-dev-api中配置启动入口及hello接口
+
+开发热启动
+https://www.jianshu.com/p/0f62cab718ef
+```
+        <!-- 热启动 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <optional>true</optional>
+        </dependency>
+```
+Ctrl+Alt+S打开设置，在Build，Execotion，Deployment->Compiler->勾选Build Project automatically项
+Ctrl + Shift + Alt + /，选择Registry,勾选 Compiler autoMake allow when app running
+
+## 2、整合数据库和mybatis
+
+
+1. 数据源
+
+	hikaricp：高性能JDBC连接池，比其他数据源更快，高并发时效率更高
+	[hikaricp](https://github.com/brettwooldridge/HikariCP)
+			
+    ```
+        <!-- mysql驱动 -->
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.41</version>
+        </dependency>
+    ```
+
+2. mybatis
+
+    简介：
+        MyBatis 是一款优秀的持久层框架，它支持定制化 SQL、存储过程以及高级映射。MyBatis 避免了几乎所有的 JDBC 代码和手动设置参数以及获取结果集。MyBatis 可以使用简单的 XML 或注解来配置和映射原生类型、接口和 Java 的 POJO（Plain Old Java Objects，普通老式 Java 对象）为数据库中的记录。
+
+    [mybatis](https://mybatis.org/mybatis-3/zh/index.html)
+    [w3cschool教程](https://www.w3cschool.cn/mybatis/)
+    [实战教程](https://blog.csdn.net/hellozpc/article/details/80878563)
+
+    ```
+        <!-- mybatis -->
+        <dependency>
+            <groupId>org.mybatis.spring.boot</groupId>
+            <artifactId>mybatis-spring-boot-starter</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+    ```
+
+3. application.xml配置数据源和mybatis
+
+    ```
+    ############################################################
+    #
+    # 配置数据源信息
+    #
+    ############################################################
+    spring:
+      datasource:                                           # 数据源的相关配置
+          type: com.zaxxer.hikari.HikariDataSource          # 数据源类型：HikariCP
+          driver-class-name: com.mysql.jdbc.Driver          # mysql驱动
+          url: jdbc:mysql://localhost:3306/foodie-shop-dev?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true
+          username: root
+          password: root
+        hikari:
+          connection-timeout: 30000       # 等待连接池分配连接的最大时长（毫秒），超过这个时长还没可用的连接则发生SQLException， 默认:30秒
+          minimum-idle: 5                 # 最小连接数
+          maximum-pool-size: 20           # 最大连接数
+          auto-commit: true               # 自动提交
+          idle-timeout: 600000            # 连接超时的最大时长（毫秒），超时则被释放（retired），默认:10分钟
+          pool-name: DateSourceHikariCP     # 连接池名字
+          max-lifetime: 1800000           # 连接的生命时长（毫秒），超时而且没被使用则被释放（retired），默认:30分钟 1800000ms
+          connection-test-query: SELECT 1
+              
+    ############################################################
+    #
+    # mybatis 配置
+    #
+    ############################################################
+    mybatis:
+      type-aliases-package: com.imooc.pojo          # 所有POJO类所在包路径
+      mapper-locations: classpath:mapper/*.xml      # mapper映射文件
+
+    ############################################################
+    #
+    # 内置tomcat  web访问端口号  约定：8088
+    #
+    ############################################################
+    server:
+      port: 8088
+      tomcat:
+        uri-encoding: UTF-8
+      max-http-header-size: 80KB
+
+    ```
+
+
+## 3、mybatis逆向生成工具
+
+    mybatis-generator-for-imooc
+    将数据库中的表生成pojo实体类、*mapper.xml、*mapper.java
+1. 运行项目
+2. 配置文件generatorConfig.xml修改数据库连接信息和tableName字段，每个表名写一条。
+3. 修改设置files=>setting=>build=>buildtool=>maven=>目录的路径，将override勾去掉
+4. 运行GeneratorDisplay
+    如果是重新执行要把之前的生成的文件删除，另外要确保目录都存在
+    如果mysql是高版本的需要升级数据源连接器
+    ```
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.11</version>
+        </dependency>
+    ```
+    以及配置时区问题
+    ```
+        mysql>set global time_zone='+8:00';
+        mysql>flush privileges; 
+    ```
+5. 将生成和文件拷贝到自己的项目中
+6. pom中添加逆向工具相关依赖
+    ```
+    <!-- 通用mapper逆向工具 -->
+    <dependency>
+        <groupId>tk.mybatis</groupId>
+        <artifactId>mapper-spring-boot-starter</artifactId>
+        <version>2.1.5</version>
+    </dependency>
+    ```
+
+7.  在yml中引入通用mapper配置
+    ```
+    mapper:
+      mappers: com.imooc.my.mapper.MyMapper
+      not-empty: false
+      identity: MYSQL
+    ```
+8.  引入MyMapper接口类
+    ```
+    package com.imooc.my.mapper;
+
+    import tk.mybatis.mapper.common.Mapper;
+    import tk.mybatis.mapper.common.MySqlMapper;
+
+    /**
+     - 继承自己的MyMapper
+     */
+    public interface MyMapper<T> extends Mapper<T>, MySqlMapper<T> {
+    }
+    ```
+
+Error:(3) java: 程序包javax.persistence不存在
+出现类找不到时清空.m2中的包，或者在build tool=>build=>maven=>local repos 勾上override选择其他库目录
+
+9.修改启动类
+//扫描mybatis通用mapper所在的包
+@MapperScan(basePackages = "com.imooc.mapper")
+@ComponentScan(basePackages = {"com.imooc", "org.n3r.idworker"})
+
+service语法报错
+Editor=>Inspections=>spring=>springcode=>code=>Autowiring for bean class 改错误级别或去掉勾
+
+
+
+## 10、定时任务
+
+[定时任务表达式生成工具](http://cron.qqe2.com)
+
+```
+@EnableScheduling
+启动类
+```
+
+```
+@Scheduled(cron = "0/3 * * * * ?")
+定时任务函数
+```
+
+# 内网穿透
+https://natapp.cn/
+
+注册账号
+13330102099 YWzhou@123
+

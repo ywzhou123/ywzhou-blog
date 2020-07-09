@@ -1,99 +1,110 @@
 ---
 title: MockJs
 date: 2020-04-19 19:55:28
-tags:
-categories:
+tags: tool
+categories: tool
 ---
-// http://mockjs.com
+## 一、介绍
 
-/**----------------------------------------------------------------------------------- */
-// String
-    'name|min-max': string
-        "string|1-10": "★"//随机1－10个星
-        "string|3": "★★★" //3个3星，即9星
-/**----------------------------------------------------------------------------------- */
-// Number
-    'name|+1': number
-        "number|+1": 202 //数字递增
-    'name|min-max': number
-        "number|1-100": 100 //1-100内随机
-    'name|min-max.dmin-dmax': number
-        "number|1-100.1-10": 1 //整数位1-100内随机，小数位数随机1-10位
-        "number|123.1-10": 1 //整数位固定123，小数位数随机1-10位
-        "number|123.3": 1  //整数位固定123，小数位数随机3位
-        "number|123.10": 1.123 //固定123.123，小数位后7位数随机
-/**----------------------------------------------------------------------------------- */
-// Boolean
-    'name|1': boolean
-        "boolean|1": true //随机true或false
-/**----------------------------------------------------------------------------------- */
-// Object
-    'name|count': object
-        "object|2": {       //随机2项
-            "310000": "上海市",
-            "320000": "江苏省",
-            "330000": "浙江省",
-            "340000": "安徽省"
-        }
-        "object|2-4": {       //随机2-4项
-            "110000": "北京市",
-            "120000": "天津市",
-            "130000": "河北省",
-            "140000": "山西省"
-        }
-/**----------------------------------------------------------------------------------- */
-// Array
-    'name|1': array
-        "array|1": [ //随机获取一个成员
-            "AMD",
-            "CMD",
-            "UMD"
-        ]
-        "array|+1": [ //按次序轮流获取一个成员
-            "AMD",
-            "CMD",
-            "UMD"
-        ]
-        "array|1-10": [
-            {
-                "name|+1": [
-                    "Hello",·
-                    "Mock.js",
-                    "!"
-                ]
-            }
-        ]
-    'name|min-max': array  //随机复制次数数组成员，仍返回数组
-            "array|1-10": [
-                "Mock.js"
-            ]
-            "array|1-10": [
-                "Hello",
-                "Mock.js",
-                "!"
-            ]
-    'name|count': array //复制指定次数数组成员，仍返回数组
-        "array|3": [
-            "Mock.js"
-        ]
-        "array|3": [
-            "Hello",
-            "Mock.js",
-            "!"
-        ]
-/**----------------------------------------------------------------------------------- */
-// Function
-/**----------------------------------------------------------------------------------- */
-// RegExp
-    'regexp': /[a-z][A-Z][0-9]/  //匹配一个小写一个大写一个数字，"rL7"
-    'regexp': /\w\W\s\S\d\D/    //"L;\ne0y"
-    'regexp': /\d{5,10}/        //5-10位整数，"1397379"
-    'regexp|3': /\d{5,10}\-/    //"517305176-531837-967646851-07321438-"
-    'regexp|1-5': /\d{5,10}\-/  //"197685-57124-"
+http://mockjs.com
 
-/**----------------------------------------------------------------------------------- */
-// Path
-    //数据占位符定义
+为前端开发提供模拟数据
+
+## 二、使用
+
+### String
+
+​    'name|min-max': string
+​        "string|1-10": "★"//随机1－10个星
+​        "string|3": "★★★" //3个3星，即9星
+
+### Number
+
+​    'name|+1': number
+​        "number|+1": 202 //数字递增
+​    'name|min-max': number
+​        "number|1-100": 100 //1-100内随机
+​    'name|min-max.dmin-dmax': number
+​        "number|1-100.1-10": 1 //整数位1-100内随机，小数位数随机1-10位
+​        "number|123.1-10": 1 //整数位固定123，小数位数随机1-10位
+​        "number|123.3": 1  //整数位固定123，小数位数随机3位
+​        "number|123.10": 1.123 //固定123.123，小数位后7位数随机
+
+### Boolean
+
+​    'name|1': boolean
+​        "boolean|1": true //随机true或false
+
+### Object
+
+​    'name|count': object
+​        "object|2": {       //随机2项
+​            "310000": "上海市",
+​            "320000": "江苏省",
+​            "330000": "浙江省",
+​            "340000": "安徽省"
+​        }
+​        "object|2-4": {       //随机2-4项
+​            "110000": "北京市",
+​            "120000": "天津市",
+​            "130000": "河北省",
+​            "140000": "山西省"
+​        }
+
+### Array
+
+​    'name|1': array
+​        "array|1": [ //随机获取一个成员
+​            "AMD",
+​            "CMD",
+​            "UMD"
+​        ]
+​        "array|+1": [ //按次序轮流获取一个成员
+​            "AMD",
+​            "CMD",
+​            "UMD"
+​        ]
+​        "array|1-10": [
+​            {
+​                "name|+1": [
+​                    "Hello",·
+​                    "Mock.js",
+​                    "!"
+​                ]
+​            }
+​        ]
+​    'name|min-max': array  //随机复制次数数组成员，仍返回数组
+​            "array|1-10": [
+​                "Mock.js"
+​            ]
+​            "array|1-10": [
+​                "Hello",
+​                "Mock.js",
+​                "!"
+​            ]
+​    'name|count': array //复制指定次数数组成员，仍返回数组
+​        "array|3": [
+​            "Mock.js"
+​        ]
+​        "array|3": [
+​            "Hello",
+​            "Mock.js",
+​            "!"
+​        ]
+
+### RegExp
+
+​    'regexp': /[a-z][A-Z][0-9]/  //匹配一个小写一个大写一个数字，"rL7"
+​    'regexp': /\w\W\s\S\d\D/    //"L;\ne0y"
+​    'regexp': /\d{5,10}/        //5-10位整数，"1397379"
+​    'regexp|3': /\d{5,10}\-/    //"517305176-531837-967646851-07321438-"
+​    'regexp|1-5': /\d{5,10}\-/  //"197685-57124-"
+
+
+
+### Path
+
+​    //数据占位符定义
 
         Basic
             boolean
@@ -192,55 +203,62 @@ categories:
             id
             increment
 
-/**----------------------------------------------------------------------------------- */
-/**
- * 示例
- */
-var example_json = {
-    "successed": true, 
-    "status": 200, 
-    "data": {
-        "page": 0, 
-        "pageSize": 20, 
-        "total": 120, 
-        "list|20": [
-            {
-                "userID|+1": 29583, 
-                "name|1": "@cfirst@clast", 
-                "mobile|1": "13@integer(100000000,999999999)", 
-                "departementName|1": "@ctitle(2,4)部", 
-                "positionName|1": "@csentence(4)", 
-                "email|1": "@email()", 
-                "manageScope|1-2": [
-                    "南昌"
-                ], 
-                "createTime": "@date(\"yyyy-MM-dd\") @time(\"HH:mm:ss\")", 
-                "sex|1": [
-                    -1, 
-                    1
-                ], 
-                "address": "@county(true)", 
-                "cardId": "@id()", 
-                "originPlace": "@city()", 
-                "married|1": [
-                    0, 
-                    1, 
-                    2
-                ], 
-                "nation|1": [
-                    0, 
-                    1
-                ], 
-                "isManager|1": false, 
-                "cardNo": "10001"
-            }
-        ]
-    }, 
+
+
+## 示例
+
+
+
+```js
+{
+  "successed": true, 
+  "status": 200, 
+  "data": {
+  	"page": 0, 
+    "pageSize": 20, 
+    "total": 120, 
+    "list|20": [
+      {
+        "userID|+1": 29583, 
+        "name|1": "@cfirst@clast", 
+        "mobile|1": "13@integer(100000000,999999999)", 
+        "departementName|1": "@ctitle(2,4)部", 
+        "positionName|1": "@csentence(4)", 
+        "email|1": "@email()", 
+        "manageScope|1-2": [
+          "南昌"
+        ], 
+        "createTime": "@date(\"yyyy-MM-dd\") @time(\"HH:mm:ss\")", 
+        "sex|1": [
+          -1, 
+          1
+        ], 
+        "address": "@county(true)", 
+        "cardId": "@id()", 
+        "originPlace": "@city()", 
+        "married|1": [
+          0, 
+          1, 
+          2
+        ], 
+        "nation|1": [
+          0, 
+          1
+        ], 
+        "isManager|1": false, 
+        "cardNo": "10001"
+      }
+    ]
+  }, 
     "query": {
-        "pageSize": "15", 
-        "page": "1", 
-        "keys": "", 
-        "deptId": "1", 
-        "corNode": "1"
+      "pageSize": "15", 
+      "page": "1", 
+      "keys": "", 
+      "deptId": "1", 
+      "corNode": "1"
     }
 }
+```
+
+
+

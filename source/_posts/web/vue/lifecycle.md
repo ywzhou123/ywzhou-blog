@@ -12,7 +12,7 @@ categories:
 
 <!-- more -->
 
-![](../../../images/vue_life.png)
+<img src="../../../images/vue_life.png" style="zoom:50%;" />
 
 ## beforeCreate：
 

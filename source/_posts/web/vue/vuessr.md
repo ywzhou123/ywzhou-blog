@@ -46,3 +46,28 @@ console.error(err)
 ```
 npm install express --save
 ```
+
+
+
+
+
+# 二、nuxt.js框架
+
+- 支持vue2 vue-router vuex vue-meta
+
+​    https://zh.nuxtjs.org
+
+​    https://github.com/nuxt-community/koa-template
+
+##     安装
+
+```        
+vue init nuxt-community/koa-template .
+//或者
+npm i -g npx
+npx create-nuxt-app project
+```
+
+>    mounted方式不在ssr中渲染，改用asyncData()
+>
+>   fetch()用于提交vuex数据

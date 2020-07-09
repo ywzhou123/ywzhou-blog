@@ -1,8 +1,8 @@
 ---
 title: Loadash工具库
 date: 2020-04-19 19:30:06
-tags:
-categories:
+tags: tool
+categories: tool
 ---
 # 一、介绍
 [Loadash](https://www.lodashjs.com)
@@ -15,7 +15,7 @@ npm i --save lodash
 ```
 
 
-```
+```js
 // Load the full build.
 var _ = require('lodash');
 // Load the core build.

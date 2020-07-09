@@ -1,0 +1,2107 @@
+// Generator函数
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//   简介
+
+​    // 说明
+
+​      /*意思是生成器，是一个状态机，封装了多个内部状态
+
+​      返回一个遍历器对象，可以遍历每一个状态
+
+​      function关键字与函数名之间有一个星号
+
+​      内部使用yield语句，定义不同的内部状态
+
+​      yield语句在英语里的意思就是“产出”*/
+
+​    
+
+​    // 有三个状态：hello，world和return语句
+
+​        function* helloWorldGenerator() {   
+
+​            yield 'hello';   
+
+​            yield 'world';   
+
+​            return 'ending'; 
+
+​        }  
+
+​    // 调用Generator函数后，该函数并不执行
+
+​        var hw = helloWorldGenerator();
+
+​    // done属性的值false，表示遍历还没有结束
+
+​        hw.next() // { value: 'hello', done: false }  
+
+​        hw.next() // { value: 'world', done: false }  
+
+​    // 从上次yield语句停下的地方，一直执行到return语句
+
+​        hw.next() // { value: 'ending', done: true }  
+
+​        hw.next() // { value: undefined, done: true }
+
+​    // *号位置可以随意
+
+​        function * foo(x, y) {  }  
+
+​        function *foo(x, y) {  }  
+
+​        function* foo(x, y) {  }  
+
+​        function*foo(x, y) {  }
+
+
+
+​    // yield语句
+
+​      /*遇到yield，函数暂停执行，下一次再从该位置继续向后执行
+
+​      yield语句后面的表达式，只有当调用next方法、内部指针指向该语句时才会执行
+
+​      yield语句不能用在普通函数中*/
+
+​      var arr = [1, [[2, 3], 4], [5, 6]];  
+
+​      var flat = function* (a) {   
+
+​          var length = a.length;   
+
+​          for (var i = 0; i < length; i++) {     
+
+​              var item = a[i];     
+
+​              if (typeof item !== 'number') {       
+
+​                  yield* flat(item);     
+
+​                } else {       
+
+​                    yield item;     
+
+​                }   
+
+​            } 
+
+​        };  
+
+​        for (var f of flat(arr)) {   
+
+​            console.log(f); 
+
+​        } // 1, 2, 3, 4, 5, 6
+
+​        // forEach方法的参数是一个普通函数，但是在里面使用了yield语句，改用for循环
+
+​        console.log('Hello' + yield); // SyntaxError 
+
+​        console.log('Hello' + yield 123); // SyntaxError  
+
+​        console.log('Hello' + (yield)); // OK 
+
+​        console.log('Hello' + (yield 123)); // OK
+
+​        // 用在一个表达式之中，必须放在圆括号里
+
+​        foo(yield 'a', yield 'b'); // OK 
+
+​        let input = yield; // OK
+
+​        // 用作函数参数或赋值表达式的右边，可以不加括号
+
+​    // 与Iterator接口的关系
+
+​      var myIterable = {}; 
+
+​      myIterable[Symbol.iterator] = function* () {   
+
+​          yield 1;   
+
+​          yield 2;   
+
+​          yield 3; 
+
+​        };  
+
+​        [...myIterable] // [1, 2, 3]
+
+​        // 可以把Generator赋值给对象的Symbol.iterator属性
+
+​        // 使得myIterable对象具有了Iterator接口，可以被...运算符遍历了
+
+​      function* gen(){   
+
+​          // some code 
+
+​        }  
+
+​        var g = gen();  
+
+​        g[Symbol.iterator]() === g // true
+
+​        // gen是一个Generator函数，调用它会生成一个遍历器对象g
+
+​        // Symbol.iterator属性也是一个遍历器对象生成函数，执行后返回它自己
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//   next的参数
+
+​    function* f() {   
+
+​        for(var i=0; true; i++) {     
+
+​            var reset = yield i;     
+
+​            if(reset) { i = -1; 
+
+​            }   
+
+​        } 
+
+​    }  
+
+​    var g = f();  
+
+​    g.next() // { value: 0, done: false } 
+
+​    g.next() // { value: 1, done: false } 
+
+​    g.next(true) // { value: 0, done: false }
+
+​    //   next方法的参数会被当作上一个yield语句的返回值
+
+​    //   第一次使用next方法时，不能带有参数
+
+​    function* foo(x) {   
+
+​        var y = 2 * (yield (x + 1));   
+
+​        var z = yield (y / 3);   
+
+​        return (x + y + z); 
+
+​    }  
+
+​        var a = foo(5); 
+
+​        a.next() // Object{value:6, done:false} 
+
+​        a.next() // Object{value:NaN, done:false} 
+
+​        a.next() // Object{value:NaN, done:true}  
+
+​        var b = foo(5); b.next() // { value:6, done:false } 
+
+​        b.next(12) // { value:8, done:false } 
+
+​        b.next(13) // { value:42, done:true }
+
+​    //   a第二次运行next方法的时候不带参数，导致y的值等于2 * undefined（即NaN）
+
+​    //   b第二次调用next方法，将上一次yield语句的值设为12，因此y等于24，返回y / 3的值8
+
+​    //   第三次调用next方法，将上一次yield语句的值设为13，因此z等于13，这时x等于5，y等于24
+
+​    function wrapper(generatorFunction) {   
+
+​        return function (...args) {     
+
+​            let generatorObject = generatorFunction(...args);     
+
+​            generatorObject.next();     
+
+​            return generatorObject;   
+
+​        }; 
+
+​    }  
+
+​    const wrapped = wrapper(function* () {   
+
+​        console.log(`First input: ${yield}`);   
+
+​        return 'DONE'; 
+
+​    });  
+
+​        wrapped().next('hello!') // First input: hello!
+
+​    //   在Generator函数外面再包一层，可以第一次调用next就输入参数
+
+​    function* dataConsumer() {   
+
+​        console.log('Started');   
+
+​        console.log(`1. ${yield}`);   
+
+​        console.log(`2. ${yield}`);   
+
+​        return 'result'; 
+
+​    }  
+
+​    let genObj = dataConsumer(); 
+
+​    genObj.next();   // Started 
+
+​    genObj.next('a') // 1. a 
+
+​    genObj.next('b') // 2. b
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//   for...of循环
+
+​    function *foo() {   
+
+​        yield 1;   
+
+​        yield 2;   
+
+​        yield 3;   
+
+​        yield 4;   
+
+​        yield 5;   
+
+​        return 6; 
+
+​    }  
+
+​    for (let v of foo()) {   
+
+​        console.log(v); 
+
+​    } // 1 2 3 4 5
+
+​    //   返回对象的done属性为true，for...of循环就会中止
+
+​    function* fibonacci() {   
+
+​        let [prev, curr] = [0, 1];   
+
+​        for (;;) {     
+
+​            [prev, curr] = [curr, prev + curr];     
+
+​            yield curr;   
+
+​        } 
+
+​    }  
+
+​    for (let n of fibonacci()) {   
+
+​        if (n > 1000) break;   
+
+​        console.log(n); 
+
+​    }
+
+​    function* objectEntries(obj) {   
+
+​        let propKeys = Reflect.ownKeys(obj);    
+
+​        for (let propKey of propKeys) {     
+
+​            yield [propKey, obj[propKey]];   
+
+​        } 
+
+​    }  
+
+​    let jane = { first: 'Jane', last: 'Doe' };  
+
+​    for (let [key, value] of objectEntries(jane)) {   
+
+​        console.log(`${key}: ${value}`); 
+
+​    } // first: Jane // last: Doe
+
+​    //   object通过Generator函数为它加上遍历接口
+
+​    function* objectEntries() {   
+
+​        let propKeys = Object.keys(this);    
+
+​        for (let propKey of propKeys) {     
+
+​            yield [propKey, this[propKey]];   
+
+​        } 
+
+​    }  
+
+​    let jane = { first: 'Jane', last: 'Doe' };  
+
+​    jane[Symbol.iterator] = objectEntries;  
+
+​    for (let [key, value] of jane) {   
+
+​        console.log(`${key}: ${value}`); 
+
+​    } // first: Jane // last: Doe
+
+​    //   或者将Generator函数加到对象的Symbol.iterator属性上面
+
+​    function* numbers () {   
+
+​        yield 1   
+
+​        yield 2   
+
+​        return 3   
+
+​        yield 4 
+
+​    }  
+
+​    // 扩展运算符 
+
+​    [...numbers()] // [1, 2]  
+
+​    // Array.from 方法 
+
+​    Array.from(numbers()) // [1, 2]  
+
+​    // 解构赋值 
+
+​    let [x, y] = numbers(); 
+
+​    x // 1 
+
+​    y // 2  
+
+​    // for...of 循环 
+
+​    for (let n of numbers()) {   
+
+​        console.log(n) 
+
+​    } // 1 // 2
+
+​    //   扩展运算符（...）、解构赋值和Array.from方法都是遍历器接口
+
+​    //   都可以将Generator函数返回的Iterator对象，作为参数
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//   throw()
+
+​    var g = function* () {   
+
+​        try {     
+
+​            yield;   
+
+​        } catch (e) {     
+
+​            console.log('内部捕获', e);   
+
+​        } 
+
+​    };  
+
+​    var i = g(); 
+
+​    i.next();  
+
+​    try {   
+
+​        i.throw('a');   
+
+​        i.throw('b'); 
+
+​    } catch (e) {   
+
+​        console.log('外部捕获', e); 
+
+​    } 
+
+​    // 内部捕获 a 
+
+​    // 外部捕获 b
+
+​    //   第一个错误被Generator函数体内的catch语句捕获
+
+​    //   第二次抛出错误，Generator函数内部的catch语句已经执行过了，不会再捕捉
+
+​    //   错误就被抛出了Generator函数体，被函数体外的catch语句捕获
+
+​    var g = function* () {   
+
+​        try {     
+
+​            yield;   
+
+​        } catch (e) {     
+
+​            console.log(e);   
+
+​        } 
+
+​    };  
+
+​    var i = g(); 
+
+​    i.next(); 
+
+​    i.throw(new Error('出错了！')); // Error: 出错了！(…)
+
+​    //   可以接受一个参数，该参数会被catch语句接收，建议抛出Error对象的实例
+
+​    var g = function* () {   
+
+​        while (true) {     
+
+​            yield;     
+
+​            console.log('内部捕获', e);   
+
+​        } 
+
+​    };  
+
+​    var i = g(); 
+
+​    i.next();  
+
+​    try {   
+
+​        i.throw('a');   
+
+​        i.throw('b'); 
+
+​    } catch (e) {   
+
+​        console.log('外部捕获', e); 
+
+​    } // 外部捕获 a
+
+​    //   内部没有部署try...catch代码块
+
+​    //   抛出的错误直接被外部catch代码块捕获
+
+​    var gen = function* gen(){   
+
+​        yield console.log('hello');   
+
+​        yield console.log('world'); 
+
+​    }  
+
+​    var g = gen(); 
+
+​    g.next(); 
+
+​    g.throw(); // hello // Uncaught undefined
+
+​    //   内部和外部，都没有部署try...catch代码块
+
+​    //   程序将报错，直接中断执行
+
+​    var gen = function* gen(){   
+
+​        try {     
+
+​            yield console.log('a');   
+
+​        } catch (e) {     
+
+​            // ...   
+
+​        }   
+
+​        yield console.log('b');   
+
+​        yield console.log('c'); 
+
+​    }  
+
+​    var g = gen(); 
+
+​    g.next() // a 
+
+​    g.throw() // b 
+
+​    g.next() // c
+
+​    //   throw方法被捕获以后，会附带执行下一条yield语句
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+//   return()
+
+
+
+​    function* gen() {   
+
+​        yield 1;   
+
+​        yield 2;   
+
+​        yield 3; 
+
+​    }  
+
+​    var g = gen();  
+
+​    g.next()        // { value: 1, done: false } 
+
+​    g.return('foo') // { value: "foo", done: true } 
+
+​    g.next()        // { value: undefined, done: true }
+
+​    //   g调用return方法后，返回值的value属性就是return方法的参数foo
+
+​    //   遍历就终止了，返回值的done属性为true
+
+​    //   不提供参数，则返回值的value属性为undefined
+
+​    function* numbers () {   
+
+​        yield 1;   
+
+​        try {     
+
+​            yield 2;     
+
+​            yield 3;   
+
+​        } finally {     
+
+​            yield 4;    
+
+​            yield 5;   
+
+​        }   
+
+​        yield 6; 
+
+​    } 
+
+​    var g = numbers() 
+
+​    g.next() // { done: false, value: 1 } 
+
+​    g.next() // { done: false, value: 2 } 
+
+​    g.return(7) // { done: false, value: 4 } 
+
+​    g.next() // { done: false, value: 5 } 
+
+​    g.next() // { done: true, value: 7 }
+
+​    //   内部有try...finally代码
+
+​    //   return方法会推迟到finally代码块执行完再执行
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//   yield*语句
+
+​    function* foo() {   
+
+​        yield 'a';   yield 'b'; }  
+
+​        function* bar() {   
+
+​            yield 'x';   
+
+​            foo();   
+
+​            yield 'y'; 
+
+​        }  
+
+​        for (let v of bar()){   
+
+​            console.log(v); 
+
+​        } // "x" // "y"
+
+​    //   在Generater函数内部，调用另一个Generator函数，默认情况下是没有效果
+
+​    function* bar() {   
+
+​        yield 'x';   
+
+​        yield* foo();   
+
+​        yield 'y'; }  
+
+​        // 等同于 
+
+​        function* bar() {   
+
+​            yield 'x';   
+
+​            yield 'a';   
+
+​            yield 'b';   
+
+​            yield 'y'; 
+
+​        }  
+
+​        // 等同于 
+
+​        function* bar() {   
+
+​            yield 'x';   
+
+​            for (let v of foo()) {     
+
+​                yield v;   
+
+​            }   
+
+​            yield 'y'; 
+
+​        }  
+
+​        for (let v of bar()){   
+
+​            console.log(v); 
+
+​        } 
+
+​        // "x" 
+
+​        // "a" 
+
+​        // "b" 
+
+​        // "y"
+
+
+
+​      function* inner() {   
+
+​          yield 'hello!'; 
+
+​        }  
+
+​        function* outer1() {   
+
+​            yield 'open';   
+
+​            yield inner();   
+
+​            yield 'close'; 
+
+​        }  
+
+​        var gen = outer1() 
+
+​        gen.next().value // "open" 
+
+​        gen.next().value // 返回一个遍历器对象 
+
+​        gen.next().value // "close"  
+
+​        function* outer2() {   
+
+​            yield 'open'   
+
+​            yield* inner()   
+
+​            yield 'close' 
+
+​        }  
+
+​        var gen = outer2() 
+
+​        gen.next().value // "open" 
+
+​        gen.next().value // "hello!" 
+
+​        gen.next().value // "close"
+
+​        let delegatedIterator = (function* () {   
+
+​            yield 'Hello!';   
+
+​            yield 'Bye!'; 
+
+​        }());  
+
+​        let delegatingIterator = (function* () {   
+
+​            yield 'Greetings!';   
+
+​            yield* delegatedIterator;   
+
+​            yield 'Ok, bye.'; }());  
+
+​            for(let value of delegatingIterator) {   
+
+​                console.log(value); 
+
+​            } 
+
+​            // "Greetings! 
+
+​            // "Hello!" 
+
+​            // "Bye!" 
+
+​            // "Ok, bye."
+
+
+
+​        function* gen(){   
+
+​            yield* ["a", "b", "c"]; 
+
+​        }  
+
+​        gen().next() // { value:"a", done:false }
+
+​        let read = (function* () {   
+
+​            yield 'hello';   
+
+​            yield* 'hello'; 
+
+​        })();  
+
+​        read.next().value // "hello" 
+
+​        read.next().value // "h"
+
+​        // 任何数据结构只要有Iterator接口，就可以被yield*遍历
+
+​        // 不加星号，返回的是整个数组
+
+​    function *foo() {   
+
+​        yield 2;   
+
+​        yield 3;   
+
+​        return "foo"; 
+
+​    }  
+
+​    function *bar() {   
+
+​        yield 1;   
+
+​        var v = yield *foo();   
+
+​        console.log( "v: " + v );   
+
+​        yield 4; 
+
+​    }  
+
+​    var it = bar();  
+
+​    it.next() // {value: 1, done: false} 
+
+​    it.next() // {value: 2, done: false} 
+
+​    it.next() // {value: 3, done: false} 
+
+​    it.next(); // "v: foo" // {value: 4, done: false} 
+
+​    it.next() // {value: undefined, done: true}
+
+​    //   有return语句，那么就可以向代理它的Generator函数返回数据
+
+​    //   函数foo的return语句，向函数bar提供了返回值
+
+​    function* genFuncWithReturn() {   
+
+​        yield 'a';   
+
+​        yield 'b';   
+
+​        return 'The result'; 
+
+​    } 
+
+​    function* logReturned(genObj) {   
+
+​        let result = yield* genObj;   
+
+​        console.log(result); 
+
+​    }  
+
+​    [...logReturned(genFuncWithReturn())] 
+
+​    // The result 
+
+​    // 值为 [ 'a', 'b' ]
+
+​    function* iterTree(tree) {   
+
+​        if (Array.isArray(tree)) {     
+
+​            for(let i=0; i < tree.length; i++) {       
+
+​                yield* iterTree(tree[i]);     
+
+​            }   
+
+​        } else {    
+
+​             yield tree;   
+
+​            } 
+
+​        }  
+
+​        const tree = [ 'a', ['b', 'c'], ['d', 'e'] ];  
+
+​        for(let x of iterTree(tree)) {   
+
+​            console.log(x); 
+
+​        } 
+
+​        // a 
+
+​        // b 
+
+​        // c 
+
+​        // d 
+
+​        // e
+
+​    //   取出嵌套数组的所有成员
+
+​    // 下面是二叉树的构造函数， 
+
+​    // 三个参数分别是左树、当前节点和右树 
+
+​    function Tree(left, label, right) {   
+
+​        this.left = left;   
+
+​        this.label = label;   
+
+​        this.right = right; 
+
+​    }  
+
+​    // 下面是中序（inorder）遍历函数。 
+
+​    // 由于返回的是一个遍历器，所以要用generator函数。 
+
+​    // 函数体内采用递归算法，所以左树和右树要用yield*遍历 
+
+​    function* inorder(t) {   
+
+​        if (t) {     
+
+​            yield* inorder(t.left);     
+
+​            yield t.label;     
+
+​            yield* inorder(t.right);   
+
+​        } 
+
+​    }  
+
+​    // 下面生成二叉树 
+
+​    function make(array) {   
+
+​        // 判断是否为叶节点   
+
+​        if (array.length == 1) return new Tree(null, array[0], null);   
+
+​        return new Tree(make(array[0]), array[1], make(array[2])); 
+
+​    } 
+
+​    let tree = make([[['a'], 'b', ['c']], 'd', [['e'], 'f', ['g']]]);  
+
+​    // 遍历二叉树 
+
+​    var result = []; 
+
+​    for (let node of inorder(tree)) {   
+
+​        result.push(node); 
+
+​    }  
+
+​    result // ['a', 'b', 'c', 'd', 'e', 'f', 'g']
+
+​    //   遍历完全二叉树
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//   作为对象属性
+
+​    let obj = {
+
+​        \* myGeneratorMethod() { ··· }
+
+​    };
+
+​    //   一个对象的属性是Generator函数
+
+​    let obj = {
+
+​        myGeneratorMethod: function* () {
+
+​            // ···   
+
+​        }
+
+​    };
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//   this
+
+​    function* g() { }
+
+​    g.prototype.hello = function () {
+
+​        return 'hi!';
+
+​    };
+
+​    let obj = g();
+
+​    obj instanceof g  // true 
+
+​    obj.hello() // 'hi!'
+
+​    //   Generator函数的实例，也继承了Generator函数的prototype对象上的方法
+
+​    function* g() {
+
+​        this.a = 11;
+
+​    }
+
+​    let obj = g();
+
+​    obj.a // undefined
+
+​    //   g返回的总是遍历器对象，而不是this对象
+
+​    function* F() {
+
+​        yield this.x = 2;
+
+​        yield this.y = 3;
+
+​    }
+
+​    new F() // TypeError: F is not a constructor
+
+​    //   Generator函数也不能跟new命令一起用
+
+​    //   F不是构造函数
+
+​    function* F() {
+
+​        this.a = 1;
+
+​        yield this.b = 2;
+
+​        yield this.c = 3;
+
+​    }
+
+​    var obj = {};
+
+​    var f = F.call(obj);
+
+​    f.next(); // Object {value: 2, done: false} 
+
+​    f.next(); // Object {value: 3, done: false} 
+
+​    f.next(); // Object {value: undefined, done: true}  
+
+​    obj.a // 1 
+
+​    obj.b // 2 
+
+​    obj.c // 3
+
+​    //   使用call方法绑定Generator函数内部的this
+
+​    //   F内部的this对象绑定obj对象，然后调用它
+
+​    //   执行的是遍历器对象f，但是生成的对象实例是obj
+
+​    function* F() {
+
+​        this.a = 1;
+
+​        yield this.b = 2;
+
+​        yield this.c = 3;
+
+​    }
+
+​    var f = F.call(F.prototype);
+
+​    f.next();  // Object {value: 2, done: false} 
+
+​    f.next();  // Object {value: 3, done: false} 
+
+​    f.next();  // Object {value: undefined, done: true}  
+
+​    f.a // 1 f.b // 2 f.c // 3
+
+​    //   将obj换成F.prototype ，执行和生成的就是统一对象了
+
+​    function* gen() {
+
+​        this.a = 1;
+
+​        yield this.b = 2;
+
+​        yield this.c = 3;
+
+​    }
+
+​    function F() {
+
+​        return gen.call(gen.prototype);
+
+​    }
+
+​    var f = new F();
+
+​    f.next();  // Object {value: 2, done: false} 
+
+​    f.next();  // Object {value: 3, done: false} 
+
+​    f.next();  // Object {value: undefined, done: true} 
+
+​    f.a // 1
+
+​    f.b // 2 
+
+​    f.c // 3
+
+​    //   将F改成构造函数，就可以对它执行new命令了
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//   应用
+
+​    // 状态机
+
+​    var ticking = true;
+
+​    var clock = function () {
+
+​        if (ticking) console.log('Tick!');
+
+​        else console.log('Tock!');
+
+​        ticking = !ticking;
+
+​    }
+
+​        // Generator是实现状态机的最佳结构
+
+​        // 两种状态（Tick和Tock），每运行一次，就改变一次状态
+
+​    var clock = function* () {
+
+​        while (true) {
+
+​            console.log('Tick!');
+
+​            yield;
+
+​            console.log('Tock!');
+
+​            yield;
+
+​        }
+
+​    };
+
+​    //   Generator本身就包含了一个状态信息：是否处于暂停态
+
+​        
+
+​    // 异步操作的同步化表达
+
+​    function* loadUI() {
+
+​        showLoadingScreen();
+
+​        yield loadUIDataAsynchronously();
+
+​        hideLoadingScreen();
+
+​    }
+
+​    var loader = loadUI(); // 加载UI 
+
+​    loader.next()  // 卸载UI loader.next()
+
+​        // 异步操作的后续操作可以放在yield语句下面
+
+​        // 所有Loading界面的逻辑，都被封装在一个函数
+
+​    function* main() {
+
+​        var result = yield request("http://some.url");
+
+​        var resp = JSON.parse(result);
+
+​        console.log(resp.value);
+
+​    }
+
+​    function request(url) {
+
+​        makeAjaxCall(url, function (response) {
+
+​            it.next(response);
+
+​        });
+
+​    }
+
+​    var it = main();
+
+​    it.next();
+
+​        // main函数，就是通过Ajax操作获取数据
+
+​        // makeAjaxCall函数中的next方法，必须加上response参数， 因为yield语句构成的表达式，本身是没有值的
+
+​    function* numbers() {
+
+​        let file = new FileReader("numbers.txt");
+
+​        try {
+
+​            while (!file.eof) {
+
+​                yield parseInt(file.readLine(), 10);
+
+​            }
+
+​        } finally {
+
+​            file.close();
+
+​        }
+
+​    }
+
+​    //   使用yield语句可以手动逐行读取文件
+
+​        
+
+​    // 控制流管理
+
+​    Promise.resolve(step1)
+
+​        .then(step2)
+
+​        .then(step3)
+
+​        .then(step4)
+
+​        .then(function (value4) {
+
+​            // Do something with value4   
+
+​        }, function (error) {
+
+​            // Handle any error from step1 through step4   
+
+​        }).done();
+
+​        // Promise方式
+
+​    function* longRunningTask(value1) {
+
+​        try {
+
+​            var value2 = yield step1(value1);
+
+​            var value3 = yield step2(value2);
+
+​            var value4 = yield step3(value3);
+
+​            var value5 = yield step4(value4);
+
+​            // Do something with value4   
+
+​        } catch (e) {
+
+​            // Handle any error from step1 through step4   
+
+​        }
+
+​    }
+
+​    scheduler(longRunningTask(initialValue));
+
+​    function scheduler(task) {
+
+​        var taskObj = task.next(task.value);
+
+​        // 如果Generator函数未结束，就继续调用   
+
+​        if (!taskObj.done) {
+
+​            task.value = taskObj.value;
+
+​            scheduler(task);
+
+​        }
+
+​    }
+
+​        //   按次序自动执行所有步骤
+
+​        //   只适合同步操作
+
+​    let steps = [step1Func, step2Func, step3Func];
+
+​    function* iterateSteps(steps) {
+
+​        for (var i = 0; i < steps.length; i++){
+
+​            var step = steps[i];
+
+​            yield step();
+
+​        }
+
+​    }
+
+​        // for...of循环会自动依次执行yield命令
+
+​    let jobs = [job1, job2, job3];
+
+​    function* iterateJobs(jobs) {
+
+​        for (var i = 0; i < jobs.length; i++){
+
+​            var job = jobs[i];
+
+​            yield* iterateSteps(job.steps);
+
+​        }
+
+​    }
+
+​        //   还可以将项目分解成多个依次执行的任务
+
+​    for (var step of iterateJobs(jobs)) {
+
+​        console.log(step.id);
+
+​    }
+
+​        //   一次性依次执行所有任务的所有步骤
+
+​            
+
+​    // 部署Iterator接口
+
+​    function* iterEntries(obj) {
+
+​        let keys = Object.keys(obj);
+
+​        for (let i = 0; i < keys.length; i++) {
+
+​            let key = keys[i];
+
+​            yield [key, obj[key]];
+
+​        }
+
+​    }
+
+​    let myObj = { foo: 3, bar: 7 };
+
+​    for (let [key, value] of iterEntries(myObj)) {
+
+​        console.log(key, value);
+
+​    }  // foo 3 // bar 7
+
+​        // 可以在任意对象上部署Iterator接口
+
+​    function* makeSimpleGenerator(array) {
+
+​        var nextIndex = 0;
+
+​        while (nextIndex < array.length) {
+
+​            yield array[nextIndex++];
+
+​        }
+
+​    }
+
+​    var gen = makeSimpleGenerator(['yo', 'ya']);
+
+​    gen.next().value // 'yo' 
+
+​    gen.next().value // 'ya' 
+
+​    gen.next().done  // true
+
+​    
+
+​    // 作为数据结构
+
+​        // Generator可以看作是一个数组结构
+
+​            function* doStuff() {
+
+​                yield fs.readFile.bind(null, 'hello.txt');
+
+​                yield fs.readFile.bind(null, 'world.txt');
+
+​                yield fs.readFile.bind(null, 'and-such.txt');
+
+​            }
+
+​        // 可以像处理数组那样，处理这三个返回的函数
+
+​            for (task of doStuff()) {
+
+​                // task是一个函数，可以像回调函数那样使用它 
+
+​            }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+// Promise对象
+
+//   含义
+
+​    // 是异步编程的一种解决方案，比传统的回调函数和事件更合理和更强大
+
+​    // 是一个容器，里面保存着某个未来才会结束的事件（异步操作）的结果
+
+​    // 是一个对象，从它可以获取异步操作的消息
+
+​    // 有三种状态：Pending（进行中）、Resolved（已完成，又称Fulfilled）和Rejected（已失败）
+
+​    // 只有两种可能：从Pending变为Resolved和从Pending变为Rejected
+
+​    // Promise新建后就会立即执行
+
+
+
+//   基本用法
+
+​    var promise = new Promise(function (resolve, reject) {
+
+​        // ... some code
+
+​        if (/* 异步操作成功 */true){
+
+​            resolve(value);
+
+​        } else {
+
+​            reject(error);
+
+​        }
+
+​    });
+
+​    //   Promise对象是一个构造函数
+
+​    //   resolve函数将Promise对象的状态从Pending变为Resolved
+
+​    //   reject函数将Promise对象的状态从Pending变为Rejected
+
+​    //   它们的参数value和error会被传递给回调函数
+
+​    promise.then(function (value) {
+
+​        // success 
+
+​    }, function (error) {
+
+​            // failure 
+
+​        });
+
+​    //   用then方法分别指定Resolved状态和Reject状态的回调函数
+
+​    //   第一个回调函数是Promise对象的状态变为Resolved时调用
+
+​    //   第二个回调函数是Promise对象的状态变为Reject时调用(可选)
+
+​    function timeout(ms) {
+
+​        return new Promise((resolve, reject) => {
+
+​            setTimeout(resolve, ms, 'done');
+
+​        });
+
+​    }
+
+​    timeout(100).then((value) => {
+
+​        console.log(value);
+
+​    });
+
+​    //   一段时间以后才会发生的结果
+
+​    let promise = new Promise(function (resolve, reject) {
+
+​        console.log('Promise'); resolve();
+
+​    });
+
+​    promise.then(function () {
+
+​        console.log('Resolved.');
+
+​    });
+
+​    console.log('Hi!');
+
+​    // Promise 
+
+​    // Hi! 
+
+​    // Resolved
+
+​    //   Promise新建后就会立即执行,首先输出的是“Promise”
+
+​    //   then方法指定的回调函数，将在当前脚本所有同步任务执行完才会执行
+
+​    function loadImageAsync(url) {
+
+​        return new Promise(function (resolve, reject) {
+
+​            var image = new Image();
+
+​            image.onload = function () {
+
+​                resolve(image);
+
+​            };
+
+​            image.onerror = function () {
+
+​                reject(new Error('Could not load image at ' + url));
+
+​            };
+
+​            image.src = url;
+
+​        });
+
+​    }
+
+​    //   异步加载图片
+
+​    var getJSON = function (url) {
+
+​        var promise = new Promise(function (resolve, reject) {
+
+​            var client = new XMLHttpRequest();
+
+​            client.open("GET", url);
+
+​            client.onreadystatechange = handler;
+
+​            client.responseType = "json";
+
+​            client.setRequestHeader("Accept", "application/json");
+
+​            client.send(); function handler() {
+
+​                if (this.readyState !== 4) { return; }
+
+​                if (this.status === 200) {
+
+​                    resolve(this.response);
+
+​                } else {
+
+​                    reject(new Error(this.statusText));
+
+​                }
+
+​            };
+
+​        });
+
+​        return promise;
+
+​    };
+
+​    getJSON("/posts.json").then(function (json) {
+
+​        console.log('Contents: ' + json);
+
+​    }, function (error) {
+
+​        console.error('出错了', error);
+
+​    });
+
+​    //   Ajax操作
+
+​    //   getJSON是对XMLHttpRequest对象的封装， 用于发出一个针对JSON数据的HTTP请求， 并且返回一个Promise对象
+
+​    var p1 = new Promise(function (resolve, reject) {
+
+​        // ... 
+
+​    });
+
+​    var p2 = new Promise(function (resolve, reject) {
+
+​        // ...   
+
+​        resolve(p1);
+
+​    })
+
+​    //   一个异步操作的结果是返回另一个异步操作
+
+​    //   p1的状态决定了p2的状态
+
+​    var p1 = new Promise(function (resolve, reject) {
+
+​        setTimeout(() => reject(new Error('fail')), 3000)
+
+​    })
+
+​    var p2 = new Promise(function (resolve, reject) {
+
+​        setTimeout(() => resolve(p1), 1000)
+
+​    })
+
+​    p2.then(result => console.log(result))
+
+​        .catch(error => console.log(error)) // Error: fail
+
+​    //   p1在3秒之后变为rejected
+
+​    //   p2的状态在1秒之后改变，resolve方法返回的是p1
+
+​    //   又过了2秒，p1变为rejected，导致触发catch方法指定的回调函数
+
+
+
+//   then()
+
+​    getJSON("/posts.json").then(function (json) {
+
+​        return json.post;
+
+​    }).then(function (post) {
+
+​            // ... 
+
+​        });
+
+​    //   then方法返回的是一个新的Promise实例
+
+​    //   第一个回调函数完成以后，会将返回结果作为参数，传入第二个回调函数
+
+​    getJSON("/post/1.json").then(function (post) {
+
+​        return getJSON(post.commentURL);
+
+​    }).then(function funcA(comments) {
+
+​        console.log("Resolved: ", comments);
+
+​        }, function funcB(err) {
+
+​            console.log("Rejected: ", err);
+
+​        });
+
+​    //   前一个回调函数，有可能返回的还是一个Promise对象
+
+​    //   后一个回调函数，就会等待该Promise对象的状态发生变化，才会被调用
+
+​    getJSON("/post/1.json").then(
+
+​        post => getJSON(post.commentURL)
+
+​    ).then(comments => console.log("Resolved: ", comments), err => console.log("Rejected: ", err));
+
+
+
+//   catch()
+
+​    getJSON("/posts.json").then(function (posts) {
+
+​        // ... 
+
+​    }).catch(function (error) {
+
+​            // 处理 getJSON 和 前一个回调函数运行时发生的错误   
+
+​            console.log('发生错误！', error);
+
+​        });
+
+​    //   是.then(null, rejection)的别名，用于指定发生错误时的回调函数
+
+​    //   getJSON方法变为Rejected或then方法指定的回调函数错误都会被catch捕获
+
+​    //   一般不要在then方法里面定义Reject状态的回调函数，总是使用catch方法
+
+​    p.then((val) => console.log("fulfilled:", val))
+
+​        .catch((err) => console.log("rejected:", err));
+
+​    // 等同于 
+
+​    p.then((val) => console.log("fulfilled:", val))
+
+​        .then(null, (err) => console.log("rejected:", err));
+
+​    var promise = new Promise(function (resolve, reject) {
+
+​        throw new Error('test');
+
+​    });
+
+​    promise.catch(function (error) {
+
+​        console.log(error);
+
+​    }); // Error: test
+
+​    //   promise抛出一个错误，就被catch方法指定的回调函数捕获
+
+​    var promise = new Promise(function (resolve, reject) {
+
+​        try { throw new Error('test'); }
+
+​        catch (e) { reject(e); }
+
+​    });
+
+​    promise.catch(function (error) {
+
+​        console.log(error);
+
+​    });
+
+​    var promise = new Promise(function (resolve, reject) {
+
+​        reject(new Error('test'));
+
+​    });
+
+​    promise.catch(function (error) {
+
+​        console.log(error);
+
+​    });
+
+​    var promise = new Promise(function (resolve, reject) {
+
+​        resolve('ok'); throw new Error('test');
+
+​    });
+
+​    promise.then(function (value) {
+
+​        console.log(value)
+
+​    }).catch(function (error) {
+
+​        console.log(error)
+
+​    }); // ok
+
+​    //   状态已经变成Resolved，再抛出错误是无效的
+
+​    var someAsyncThing = function () {
+
+​        return new Promise(function (resolve, reject) {
+
+​            // 下面一行会报错，因为x没有声明     
+
+​            resolve(x + 2);
+
+​        });
+
+​    };
+
+​    someAsyncThing().catch(function (error) {
+
+​        console.log('oh no', error);
+
+​    }).then(function () {
+
+​            console.log('carry on');
+
+​        });
+
+​    // oh no [ReferenceError: x is not defined]
+
+​    // carry on
+
+​    //   catch方法返回的还是一个Promise对象
+
+​    Promise.resolve()
+
+​        .catch(function (error) {
+
+​            console.log('oh no', error);
+
+​        }).then(function () {
+
+​            console.log('carry on');
+
+​        }); // carry on
+
+​    //   没有报错，跳过了catch方法，直接执行后面的then方法
+
+​    //   then方法里面报错，就与前面的catch无关了
+
+​    var someAsyncThing = function () {
+
+​        return new Promise(function (resolve, reject) {
+
+​            // 下面一行会报错，因为x没有声明     
+
+​            resolve(x + 2);
+
+​        });
+
+​    };
+
+​    someAsyncThing().then(function () {
+
+​        return someOtherAsyncThing();
+
+​    }).catch(function (error) {
+
+​        console.log('oh no', error);
+
+​        // 下面一行会报错，因为y没有声明   
+
+​        y + 2;
+
+​        }).then(function () {
+
+​            console.log('carry on');
+
+​        });
+
+​        // oh no [ReferenceError: x is not defined]
+
+​    //   catch方法抛出一个错误，因为后面没有别的catch方法了， 导致这个错误不会被捕获，也不会传递到外层
+
+
+
+//   Promise.all()
+
+​    var p = Promise.all([p1, p2, p3]);
+
+​    //   将多个Promise实例，包装成一个新的Promise实例
+
+​    //   p1、p2、p3都是Promise对象的实例
+
+​    //   如果不是就会先调用Promise.resolve方法转为Promise实例
+
+​    //   状态
+
+​    //     只有p1、p2、p3的状态都变成fulfilled，p的状态才会变成fulfilled
+
+​    //     只要p1、p2、p3之中有一个被rejected，p的状态就变成rejected
+
+​    //     第一个被reject的实例的返回值，会传递给p的回调函数
+
+​    // 生成一个Promise对象的数组 
+
+​    var promises = [2, 3, 5, 7, 11, 13].map(function (id) {
+
+​        return getJSON("/post/" + id + ".json");
+
+​    });
+
+​    Promise.all(promises).then(function (posts) {
+
+​        // ... 
+
+​    }).catch(function (reason) {
+
+​        // ...
+
+​    });
+
+​    const databasePromise = connectDatabase();
+
+​    const booksPromise = databaseProimse.then(findAllBooks);
+
+​    const userPromise = databasePromise.then(getCurrentUser);
+
+​    Promise.all([booksPromise, userPromise]).then(([books, user]) => pickTopRecommentations(books, user));
+
+  
+
+//   Promise.race()
+
+​    var p = Promise.race([p1,p2,p3]);
+
+​    //   将多个Promise实例，包装成一个新的Promise实例
+
+​    //   有一个实例率先改变状态，p的状态就跟着改变
+
+​    //   那个率先改变的Promise实例的返回值，就传递给p的回调函数
+
+​    var p = Promise.race([
+
+​        fetch('/resource-that-may-take-a-while'),
+
+​        new Promise(function (resolve, reject) {
+
+​            setTimeout(() => reject(new Error('request timeout')), 5000)
+
+​        })
+
+​    ])
+
+​    p.then(response => console.log(response))
+
+​    p.catch(error => console.log(error))
+
+​    //   5秒之内fetch方法无法返回结果，变量p的状态就会变为rejected
+
+
+
+//   Promise.resolve()
+
+​    var jsPromise = Promise.resolve($.ajax('/whatever.json'));
+
+​    //   将现有对象转为Promise对象
+
+​    //   将jQuery生成的deferred对象，转为一个新的Promise对象
+
+​    let thenable = {
+
+​        then: function (resolve, reject) {
+
+​            resolve(42);
+
+​        }
+
+​    };
+
+​    let p1 = Promise.resolve(thenable);
+
+​    p1.then(function (value) {
+
+​        console.log(value);  // 42 
+
+​    });
+
+​    //   将这个对象转为Promise对象，然后就立即执行then方法
+
+​    var p = Promise.resolve('Hello');
+
+​    p.then(function (s) {
+
+​        console.log(s)
+
+​    }); // Hello
+
+
+
+//   Promise.reject()
+
+​    var p = Promise.reject('出错了');
+
+​    // 等同于 
+
+​    var p = new Promise((resolve, reject) => reject('出错了'))
+
+​    p.then(null, function (s) {
+
+​        console.log(s)
+
+​    }); // 出错了
+
+​    // 返回一个新的Promise实例，该实例的状态为rejected
+
+​        
+
+//   附加方法
+
+​    // done()
+
+​    asyncFunc()
+
+​        .then(f1)
+
+​        .catch(r1)
+
+​        .then(f2)
+
+​        .done();
+
+​        // done方法，总是处于回调链的尾端，保证抛出任何可能出现的错误
+
+​    // finally()
+
+​    server.listen(0)
+
+​        .then(function () {
+
+​            // run test   
+
+​        }).finally(server.stop);
+
+​        // 不管Promise对象最后状态如何，都会执行的操作
+
+​        // 接受一个普通的回调函数作为参数
+
+​          
+
+//   应用
+
+​    // 加载图片
+
+​    const preloadImage = function (path) {
+
+​        return new Promise(function (resolve, reject) {
+
+​            var image = new Image();
+
+​            image.onload = resolve;
+
+​            image.onerror = reject;
+
+​            image.src = path;
+
+​        });
+
+​    };
+
+​    // Generator函数
+
+​    function getFoo() {
+
+​        return new Promise(function (resolve, reject) {
+
+​            resolve('foo');
+
+​        });
+
+​    }
+
+​    var g = function* () {
+
+​        try {
+
+​            var foo = yield getFoo(); console.log(foo);
+
+​        }
+
+​        catch (e) {
+
+​            console.log(e);
+
+​        }
+
+​    };
+
+​    function run(generator) {
+
+​        var it = generator();
+
+​        function go(result) {
+
+​            if (result.done) return result.value;
+
+​            return result.value.then(function (value) {
+
+​                return go(it.next(value));
+
+​            }, function (error) {
+
+​                return go(it.throw(error));
+
+​            });
+
+​        }
+
+​        go(it.next());
+
+​    }
+
+​    run(g);
+
+​        // 使用Generator函数管理流程，遇到异步操作的时候，通常返回一个Promise对象
+
+​        // 函数run用来处理这个Promise对象，并调用下一个next方法

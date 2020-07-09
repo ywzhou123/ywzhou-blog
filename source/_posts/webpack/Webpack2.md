@@ -1,0 +1,512 @@
+# Webpack2
+
+## 安装
+
+```bash
+npm install webpack webpack-dev-server react react-dom babel babel-core babel-loader --save-dev
+
+open-browser-webpack-plugin html-webpack-plugin
+```
+
+
+
+## 命令
+
+### webpack
+
+- 在开发环境构建一次
+
+### webpack -d
+
+- 构建并生成源代码映射文件
+
+### webpack -p
+
+- 在生产环境构建，压缩、混淆代码，移除无用代码
+
+### webpack --watch
+
+- 快速增量构建，可和其他参数同用
+
+###  webpack-dev-server --devtool --progress
+
+### webpack --display-error-details --colors --watch
+
+
+
+
+
+## 加载器 
+
+> style-loader css-loader url-loader babel-loader sass-loader file-loader
+
+
+
+### jsx
+
+- 用于加载.js或.jsx文件，支持react的jsx语法、ES6语法
+
+```bash
+npm install react react-dom babel babel-core babel-loader babel-preset-react babel-preset-es2015 --save-dev
+```
+
+```js       
+ loaders:[       
+
+          {         
+
+              test: /\.js[x]?$/,         
+
+              exclude: /node_modules/,         
+
+              loader: 'babel-loader?presets[]=es2015&presets[]=react',       
+
+            },     
+
+        ]
+
+        loaders:[       
+
+            {         
+
+                test: /\.js[x]?$/,         
+
+                exclude: /node_modules/,         
+
+                loader: 'babel-loader',  
+                
+                query: {           
+
+                    presets: ['es2015', 'react']         
+
+                }       
+
+            },     
+
+        ]
+```
+
+​       
+
+
+
+### Image
+
+- 用于加载图片文件，限制大小为8192字节
+
+```bash
+npm install url-loader --save-dev
+```
+
+
+
+```js
+ loaders:[      
+		{ test: /\.(png|jpg)$/, loader: 'url-loader?limit=8192' }     
+]
+```
+
+
+
+
+
+### css
+
+- 用于加载.css样式文件
+
+```bash
+npm install css-loader style-loader  --save-dev
+```
+
+```js
+loaders:[       
+		{ test: /\.css$/, loader: 'style-loader!css-loader' },   
+]  
+```
+
+
+
+### CSS Module
+
+- css 模块加载器
+
+```js
+loaders:[       
+		{ test: /\.js[x]?$/, exclude: /node_modules/, loader: 'babel-loader?presets[]=es2015&presets[]=react' },       
+		{ test: /\.css$/, loader: 'style-loader!css-loader?modules' }     
+]
+```
+
+
+
+### bundle-loader 分割代码块
+
+
+
+- a.js将编译成1.bundle.js
+
+```js
+// main.js  
+// Now a.js is requested, it will be bundled into another file 
+var load = require('bundle-loader!./a.js');  
+
+// To wait until a.js is available (and get the exports) 
+//  you need to async wait for it. 
+
+load(function(file) {   
+	document.open();   
+	document.write('<h1>' + file + '</h1>');   
+	document.close(); 
+});
+```
+
+
+
+​           
+
+
+
+
+
+## 插件
+
+### UglifyJs 压缩js
+
+- 压缩打包后的bundle.js文件，变成无格式无空格的一行
+
+
+
+```js
+var webpack = require('webpack'); 
+var uglifyJsPlugin = webpack.optimize.UglifyJsPlugin; 
+
+module.exports = {   
+  entry: './main.js',   
+  output: {     
+    filename: 'bundle.js'   
+  },   
+  plugins: [     
+    new uglifyJsPlugin({       
+      compress: {         
+        warnings: false       
+      }     
+    })   
+  ] 
+} 
+```
+
+
+
+​            var webpack = require('webpack'); 
+
+​            var uglifyJsPlugin = webpack.optimize.UglifyJsPlugin; 
+
+
+
+​            module.exports = {   
+
+​                entry: './main.js',   
+
+​                output: {     
+
+​                    filename: 'bundle.js'   
+
+​                },   
+
+​                plugins: [     
+
+​                    new uglifyJsPlugin({       
+
+​                        compress: {         
+
+​                            warnings: false       
+
+​                        }     
+
+​                    })   
+
+​                ] 
+
+​            } 
+
+​    
+
+### html-webpack-plugin 和 open-browser-webpack-plugin
+
+- html-webpack-plugin 用于自动生成 `index.html` 页面
+- open-browser-webpack-plugin 会在 Webpack 运行后会自动打开一个新的浏览器页面
+
+```js
+var HtmlwebpackPlugin = require('html-webpack-plugin'); 
+var OpenBrowserPlugin = require('open-browser-webpack-plugin'); 
+
+module.exports = {   
+  entry: './main.js',   
+  output: {     
+    filename: 'bundle.js'   
+  },   
+  plugins: [     
+    new HtmlwebpackPlugin({       
+      title: 'Webpack-demos',       
+      filename: 'index.html'     
+    }),     
+    new OpenBrowserPlugin({       
+      url: 'http://localhost:8080'     
+    })   
+  ] 
+};
+```
+
+
+
+###  CommonsChunkPlugin
+
+- 将多个文件使用的常用代码块提取到一个单独文件
+
+
+
+```js
+ // main1.jsx 
+var React = require('react'); 
+var ReactDOM = require('react-dom');  
+ReactDOM.render(   
+  <h1>Hello World</h1>,   
+  document.getElementById('a') 
+);  
+// main2.jsx 
+var React = require('react'); 
+var ReactDOM = require('react-dom');  
+ReactDOM.render(   
+  <h2>Hello Webpack</h2>,   
+  document.getElementById('b') 
+);
+
+```
+
+
+
+- 两个jsx文件作为入口文件，编译成bundle1.js和bundle2.js
+
+​                var React = require('react'); 
+
+​                var ReactDOM = require('react-dom');  
+
+​                ReactDOM.render(   
+
+​                    <h1>Hello World</h1>,   
+
+​                        document.getElementById('a') 
+
+​                    );  
+
+​            // main2.jsx 
+
+​                var React = require('react'); 
+
+​                var ReactDOM = require('react-dom');  
+
+​                ReactDOM.render(   
+
+​                    <h2>Hello Webpack</h2>,   
+
+​                    document.getElementById('b') 
+
+​                );
+
+
+
+​        // 两个jsx文件作为入口文件，编译成bundle1.js和bundle2.js
+
+- 这两个文件存有差异部分，相同部分将提取到init.js中
+
+```js
+var CommonsChunkPlugin = require("webpack/lib/optimize/CommonsChunkPlugin");    
+module.exports = {   
+  entry: {     
+    bundle1: './main1.jsx',     
+    bundle2: './main2.jsx'   
+  },   
+  output: {     
+    filename: '[name].js'   
+  },   
+  plugins: [     
+    new CommonsChunkPlugin('init.js')   
+  ]
+}
+```
+
+
+
+
+
+###  extract-text-webpack-plugin
+
+- 独立出css样式,通过`<link>`引入
+
+` npm install extract-text-webpack-plugin --save-dev   `
+
+
+
+```js
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
+module.exports = {
+  // ...省略各种代码
+  module: {
+    loaders: [
+      {test: /\.js$/, loader: "babel"},
+      {test: /\.css$/, loader: ExtractTextPlugin.extract("style-loader", "css-loader")},
+      {test: /\.(jpg|png|svg)$/, loader: "url?limit=8192"},
+      {test: /\.scss$/, loader: "style!css!sass"}
+    ]
+  },
+  plugins: [
+    new webpack.optimize.CommonsChunkPlugin('common.js'),
+    new ExtractTextPlugin("[name].css")
+  ]
+}  
+```
+
+
+
+​           
+
+### HotModuleReplacementPlugin
+
+- 热服务模块插件， 参见下面的 Hot Module
+
+```js
+var webpack = require('webpack'); 
+var path = require('path'); 
+
+module.exports = {      
+  entry: [     
+    'webpack/hot/dev-server',     
+    'webpack-dev-server/client?http://localhost:8080',     
+    './index.js'   
+  ],   
+  plugins: [     
+    new webpack.HotModuleReplacementPlugin()   
+  ],
+}
+```
+
+
+
+### Hot Module
+
+- 以热模式响应启用服务，并将服务嵌入到bundle中
+- 修改代码不需要重启服务即可在网页上更新
+
+​        `webpack-dev-server --hot --inline`
+
+
+
+### 代码分割
+
+- 大型WebApp将所有代码放在一个文件中不是很有效率
+- Webpack可以将代码分割成多个块，且可以按需要加载相应块
+- require.ensure定义分割点，./a.js从bunle.js中分离出来并编译成一个单独的块文件
+
+```js
+ // main.js 
+require.ensure(['./a'], function(require) {   
+  var content = require('./a');   
+  document.open();   
+  document.write('<h1>' + content + '</h1>');   
+  document.close(); 
+});
+```
+
+
+
+- 编译结果为两个文件`bundle.js` and `1.bundle.js`
+
+```js
+// a.js 
+module.exports = 'Hello World';
+```
+
+
+
+### 环境标签
+
+- 让某些代码只在开发环境中运行
+
+​        
+
+```js
+document.write('<h1>Hello World</h1>');  
+if (__DEV__) {   
+  document.write(new Date()); 
+}
+```
+
+
+
+#### 自定义插件devFlagPlugin
+
+- process.env.DEBUG 获取环境变量，赋值给__DEV__标签
+
+```js
+var webpack = require('webpack');  
+var devFlagPlugin = new webpack.DefinePlugin({  
+  __DEV__: JSON.stringify(JSON.parse(process.env.DEBUG || 'false')) 
+});  
+module.exports = {   
+  entry: './main.js',   
+  output: {     
+    filename: 'bundle.js'   
+  },   
+  plugins: [devFlagPlugin] 
+};
+```
+
+
+
+- 通过环境变量DEBUG来控制运行开发环境标签中的代码
+
+```js
+// Linux & Mac 
+env DEBUG=true 
+webpack-dev-server  
+
+// Windows 
+$ set DEBUG=true 
+$ webpack-dev-server
+```
+
+
+
+##  全局变量
+
+```js
+// data.js 
+var data = 'Hello World';
+```
+
+
+
+- 使用external来调用全局变量
+
+```js
+ externals: {    
+   'data': 'data'
+ }
+```
+
+- require('data')在这里就是全局变量了
+
+```js
+ // main.jsx 
+var data = require('data'); 
+var React = require('react'); 
+var ReactDOM = require('react-dom');  
+ReactDOM.render(   
+  <h1>{data}</h1>,   
+  document.body 
+);
+
+```
+
+
+
