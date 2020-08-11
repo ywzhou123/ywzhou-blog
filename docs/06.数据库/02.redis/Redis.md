@@ -1,0 +1,452 @@
+---
+title: Redis
+date: 2020-08-11 19:41:37
+permalink: /pages/d97107/
+categories: 
+  - Java
+  - sql
+tags: 
+  - 
+---
+# Redis
+[官网](https://redis.io)
+## 作用
+    用户请求集中在数据库
+    增加分布式缓存（redis）增加并发能力，减少数据库压力
+## 优点    
+    读取性能高，每秒10万次
+    可搭建集群，高可用
+    可以存数据，做缓存
+    可以持久化存储
+## 缺点
+    单线程
+    单核
+
+## 数据类型
+    string
+
+
+# 一、安装配置
+## 安装
+    yum install -y redis
+## 配置
+    vi /etc/redis.conf
+        deamnize yes
+        dir /usr/local/redis/db
+        bind 0.0.0.0
+        requirepass 123456
+## 启动
+    redis-server -c /etc/redis.conf
+
+## 命令
+```yaml
+redis-cli
+    # string
+    auth 123456
+    set name imooc
+    setnx name imooc2 // key存在的话不会替换
+    get name
+    del name
+    keys * // 查看所有的key，正则匹配
+    type name // 返回值的类型
+    set name imooc ex 30 // 设置带过期时间的数据
+    expire age 30 // 设置过期时间30s
+    ttl age // 查看过期剩余时间 -1表示永不过期
+    append name 123 // 在原字符串imooc后面拼接字符串123
+    strlen name // 返回值的长度
+    set age 18
+    incr age // 累+1
+    decr age // 累-1
+    incrby age 10 // 增加10
+    decrby age 5 // 减少5
+    getrange name 0 -1 // 获取字符串的子串
+    setrange name 1 abc // iabcc123 替换字符串的子串，从下标1开始 
+    mset k1 v1 k2 v2 // 同时设置多个数据
+    msetnx
+    mget
+    select 1 // 切换数据库0-15
+    flushdb // 清空当前数据库
+    flushall //清空所有数据库
+
+    # hash
+    hset user name imooc // { user: {name:imooc}}
+    hget user name // imooc
+    hmset user age 18 sex man // { user: {age: 18, sex: man}}
+    hmget user age sex name // 获取对象user的多个属性的值 
+    hgetall user // 获取user对象的所有键值对
+    hlen user // 获取user对象属性数量
+    hkeys user // 获取user对象所有的keys
+    hvals user // 获取user对象所有的属性值
+    hincrby user age 3 // 属性累加
+    hincrbyfloat user age 2.2 // 累加小数
+    hexistse email // 判断属性是否存在
+    hdel user age // 删除单个属性
+    hdel user // 删除所有属性才能删除对象
+
+    # list
+    lpush userList 1 2 3 4 5：构建一个list，从左边开始存入数据
+    rpush userList 1 2 3 4 5：构建一个list，从右边开始存入数据
+    lrange list start end：获得数据
+    lpop：从左侧开始拿出一个数据
+    rpop：从右侧开始拿出一个数据
+    pig cow sheep chicken duck
+    llen list：list长度
+    lindex list index：获取list下标的值
+    lset list index value：把某个下标的值替换
+    linsert list before/after value：插入一个新的值
+    lrem list num value：删除几个相同数据
+    ltrim list start end：截取值，替换原来的list
+
+    # set 非重复数据
+    sadd set duck pig cow sheep sheep pig
+    # zset 可以去重可以排序
+    zadd zset 10 value1 20 value2 30 value3：设置member和对应的分数
+    zrange zset 0 -1：查看所有zset中的内容
+    zrange zset 0 -1 withscores：带有分数
+    zrank zset value：获得对应的下标
+    zscore zset value：获得对应的分数
+    zcard zset：统计个数
+    zcount zset 分数1 分数2：统计个数
+    zrangebyscore zset 分数1 分数2：查询分数之间的member(包含分数1 分数2)
+    zrangebyscore zset (分数1 (分数2：查询分数之间的member（不包含分数1 和 分数2）
+    zrangebyscore zset 分数1 分数2 limit start end：查询分数之间的member(包含分数1 分数2)，获得的结果集再次根据下标区间做查询
+    zrem zset value：删除member
+```
+
+
+
+
+    redis-cli -a 123456 ping // 检查Redis进程是否正在进行
+
+
+
+# SpringBoot + Redis
+
+## Redis线程模式
+redis-cli => redis-server => 多路复用器 =>  文件事件分配器 => [连接应答处理哭喊 ，命令请求处理器，命令回复处理器]
+
+## pom.xml 引入依赖包
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-redis</artifactId>
+</dependency>
+
+## application.yml
+sping:
+    redis:
+        database: 1
+        host: localhost
+        port: 6379
+        password: 123456
+
+## RedisController.java
+private RedisTemplate redisTemplate;
+public void test () {
+    redisTemplate.opsForValue().set(key, value);
+    redisTemplate.opsForValue().get(key);
+    redisTemplate.delete(key);
+}
+
+>    RedisTemplate生成的数据会乱码，创建一个redis工具类，使用StringRedisTemplate不会产生乱码
+
+# redis发布与订阅（不推荐使用，使用RQ队列）
+    订阅
+    > subscribe imooc-bigdata
+    > psubscribe imooc-* // 批量订阅
+    发布
+    > publish imooc-bigdata java
+    > 
+    这时在订阅端会实时接收到发布的消息java
+
+# redis持久化-RDB
+    RDB:
+        每隔一段时间，把内存中的数据写入磁盘的临时文件，作为快照，恢复的时候把快照文件读进内存。如果宕机重启，那么内存里的数据肯定会没有的，那么再次启动redis后，则会恢复。 
+    
+    优势
+        每隔一段时间备份，全量备份
+        灾备简单，可以远程传输
+        子进程备份的时候，主进程不会有任何io操作（不会有写入修改或删除），保证备份数据的的完整性
+        相对AOF来说，当有更大文件的时候可以快速重启恢复
+    劣势
+        发生故障是，有可能会丢失最后一次的备份数据
+        子进程所占用的内存比会和父进程一模一样，如会造成CPU负担
+        由于定时全量备份是重量级操作，所以对于实时备份，就无法处理了。
+    
+    # key发生一次更改就900秒后保存
+    save 900 1
+    # key发生10次更改就300秒后保存
+    save 300 10
+    # key发生10000次更改就60秒后保存
+    save 60 10000
+    # 保存发生错误了停止写入
+    stop-writes-on-bgsave-error yes
+    # 压缩文件
+    rdbcompression yes
+    # 检验，开启会产生10%的性能开销
+    rdbchecksum yes
+    dbfilename dump.rdb
+    dir /user/local/redis/working
+
+# redis持久化-AOF
+
+    AOF:
+        RDB会丢失最后一次备份的rdb文件，但是其实也无所谓，其实也可以忽略不计，毕竟是缓存，丢了就丢了，但是如果追求数据的完整性，那就的考虑使用AOF了。
+    
+    AOF特点
+        以日志的形式来记录用户请求的写操作。读操作不会记录，因为写操作才会存存储。
+        文件以追加的形式而不是修改的形式。
+        redis的aof恢复其实就是把追加的文件从开始到结尾读取执行写操作。
+    
+    优势
+        AOF更加耐用，可以以秒级别为单位备份，如果发生问题，也只会丢失最后一秒的数据，大大增加了可靠性和数据完整性。所以AOF可以每秒备份一次，使用fsync操作。
+        以log日志形式追加，如果磁盘满了，会执行 redis-check-aof 工具
+        当数据太大的时候，redis可以在后台自动重写aof。当redis继续把日志追加到老的文件中去时，重写也是非常安全的，不会影响客户端的读写操作。
+        AOF 日志包含的所有写操作，会更加便于redis的解析恢复。
+    
+    劣势
+        相同的数据，同一份数据，AOF比RDB大
+        针对不同的同步机制，AOF会比RDB慢，因为AOF每秒都会备份做写操作，这样相对与RDB来说就略低。 每秒备份fsync没毛病，但是如果客户端的每次写入就做一次备份fsync的话，那么redis的性能就会下降。
+        AOF发生过bug，就是数据恢复的时候数据不完整，这样显得AOF会比较脆弱，容易出现bug，因为AOF没有RDB那么简单，但是呢为了防止bug的产生，AOF就不会根据旧的指令去重构，而是根据当时缓存中存在的数据指令去做重构，这样就更加健壮和可靠了。
+    
+    # AOF 默认关闭，yes可以开启
+    appendonly no
+    # AOF 的文件名
+    appendfilename "appendonly.aof"
+    # no：不同步
+    # everysec：每秒备份，推荐使用
+    # always：每次操作都会备份，安全并且数据完整，但是慢性能差
+    appendfsync everysec
+    # 重写的时候是否要同步，no可以保证数据安全
+    no-appendfsync-on-rewrite no
+    # 重写机制：避免文件越来越大，自动优化压缩指令，会fork一个新的进程去完成重写动作，新进程里的内存数据会被重写，此时旧的aof文件不会被读取使用，类似rdb
+    # 当前AOF文件的大小是上次AOF大小的100% 并且文件体积达到64m，满足两者则触发重写
+    auto-aof-rewrite-percentage 100
+    auto-aof-rewrite-min-size 64mb
+    
+    到底采用RDB还是AOF呢？
+        如果你能接受一段时间的缓存丢失，那么可以使用RDB
+        如果你对实时性的数据比较care，那么就用AOF
+        使用RDB和AOF结合一起做持久化，RDB做冷备，可以在不同时期对不同版本做恢复，AOF做热备，保证数据仅仅只有1秒的损失。当AOF破损不可用了，那么再用RDB恢复，这样就做到了两者的相互结合，也就是说Redis恢复会先加载AOF，如果AOF有问题会再加载RDB，这样就达到冷热备份的目的了。
+
+
+# reids主从复制
+    常规使用一主二从模式，redis目前支持无磁盘化主从复制，但不建议在生产环境下使用，当磁盘性能低时可以考虑使用
+        > info replication
+    master
+    
+    slave
+
+
+# redis 缓存过期机制
+    设置了过期时间的key不能被查询到但仍占用内存
+    主动删除：每秒检查10次，删除过期key
+        hz 10
+    被动删除：过期的key只有被访问时，才会被删除
+
+# 内存淘汰管理机制
+    当内存已使用率到达，则开始清理缓存
+        maxmemory <bytes> 
+    设置过期策略
+        * noeviction：旧缓存永不过期，新缓存设置不了，返回错误
+        - allkeys-lru：清除最少用的旧缓存，然后保存新的缓存（推荐使用）
+        - allkeys-random：在所有的缓存中随机删除（不推荐）
+        - volatile-lru：在那些设置了expire过期时间的缓存中，清除最少用的旧缓存，然后保存新的缓存
+        - volatile-random：在那些设置了expire过期时间的缓存中，随机删除缓存
+        - volatile-ttl：在那些设置了expire过期时间的缓存中，删除即将过期的
+
+
+# 哨兵机制
+    用于监控Redis集群中Master状态的工具，是 Redis 高可用解决方案，哨兵可以监视一个或者多个redis master服务，以及这些master服务的所有从服务；当某个master服务宕机后，会把这个master下的某个从服务升级为master来替代已宕机的master继续工作。
+
+
+    sentinel.conf
+        port 26379
+        pidfile "/usr/local/redis/sentinel/redis-sentinel.pid"
+        dir "/usr/local/redis/sentinel"
+        daemonize yes
+        protected-mode no
+        logfile "/usr/local/redis/sentinel/redis-sentinel.log"
+        #配置哨兵
+        sentinel monitor mymaster 127.0.0.1 6379 2
+        # 密码
+        sentinel auth-pass <master-name> <password>
+        # master被sentinel认定为失效的间隔时间
+        sentinel down-after-milliseconds mymaster 30000
+        # 剩余的slaves重新和新的master做同步的并行个数
+        sentinel parallel-syncs mymaster 1
+        # 主备切换的超时时间，哨兵要去做故障转移，这个时候哨兵也是一个进程，如果他没有去执行，超过这个时间后，会由其他的哨兵来处理
+        sentinel failover-timeout mymaster 180000
+    
+    # 启动哨兵
+    redis-sentinel sentinel.conf
+    # 查看imooc-master下的master节点信息
+    sentinel master imooc-master
+    # 查看imooc-master下的slaves节点信息
+    sentinel slaves imooc-master
+    # 查看imooc-master下的哨兵节点信息
+    sentinel sentinels imooc-master
+
+
+​    
+    最好是单数台（至少3台）哨兵
+
+# springboot集成哨兵模式
+```yaml
+application.yml
+    spring:
+        redis:
+            database: 1
+            password: 123456
+            sentinel:
+                master: imooc-master
+                nodes: 192.168.1.191:26379,192.168.1.192:26379,192.168.1.193:26397
+```
+
+# redis集群
+    构建Redis集群，需要至少3个节点作为master，以此组成一个高可用的集群，此外每个master都需要配备一个slave，所以整个集群需要6个节点，这也是最经典的Redis集群，也可以称之为三主三从，容错性更佳。
+
+
+    redis.conf 配置
+    # 开启集群模式
+    cluster-enabled yes
+    # 每一个节点需要有一个配置文件，需要6份。每个节点处于集群的角色都需要告知其他所有节点，彼此知道，这个文件用于存储集群模式下的集群状态等信息，这个文件是由redis自己维护，我们不用管。如果你要重新创建集群，那么把这个文件删了就行
+    cluster-config-file nodes-201.conf
+    # 超时时间，超时则认为master宕机，随后主备切换
+    cluster-node-timeout 5000
+    # 开启AOF
+    appendonly yes
+
+
+    创建集群，把rdb等文件删除清空
+        如果你使用的是redis3.x版本，需要使用redis-trib.rb来构建集群，最新版使用C语言来构建了，这个要注意
+    
+    # 创建集群，主节点和从节点比例为1，1-3为主，4-6为从，1和4，2和5，3和6分别对应为主从关系，这也是最经典用的最多的集群模式
+    redis-cli --cluster create ip1:port1 ip2:port2 ip3:port3 ip4:port4 ip5:port5 ip6:port6 --cluster-replicas 1
+    slots：槽，用于装数据，主节点有，从节点没有
+    
+    # 检查集群信息
+    redis-cli --cluster check 192.168.25.64:6380
+    
+    redis-cli -c -a imooc -h 192.168.0.191:6379
+    >cluster info
+    >cluster nodes
+
+# spring整合redis集群
+
+    application.yml
+        spring:
+            redis
+                password: imooc
+                cluster:
+                    nodes: 192.168.1.201:6379,192.168.1.201:6379,192.168.1.201:6379,192.168.1.201:6379,192.168.1.201:6379,192.168.1.201:6379
+
+
+
+
+
+# 缓存穿透
+    正常情况下，查询商品详情数据时，如果缓存中没有就会去数据库中查询
+    如果攻击者大量发起不存在的数据查询时，会引起大量的无效的数据库查询
+    解决方案1：
+        将空数据也进行缓存，并设置过期时间
+    解决方案2：
+        布隆过滤器，二进程数据判断key是否存在，但也有缺点
+
+# 缓存雪崩
+    大量的key同一时间过期，同时突现大量的请求，就会直接向数据库发起请求，造成数据库崩溃
+    解决：
+        永不过期
+        过期时间错开
+        多缓存结合（一级缓存+二级缓存）
+        第三方redis服务（阿里、腾讯）
+
+
+
+
+# 批量查询优化
+    mget： 一次性查询多个key
+    pipeline：管道，一次连接执行多次查询
+        executePipelined
+
+# 面试题
+1.什么是 Redis?
+
+2.Redis 的数据类型？
+
+3.使用 Redis 有哪些好处？
+
+4.Redis 相比 Memcached 有哪些优势？
+
+5.Memcached 与 Redis 的区别都有哪些？
+
+6.Redis 是单进程单线程的吗？为何它那么快那么高效？
+
+7.一个字符串类型的值能存储最大容量是多少？
+
+8.Redis 的持久化机制是什么？各自的优缺点？
+
+9.Redis 常见性能问题和解决方案有哪些?
+
+10.Redis 过期键的删除策略？
+
+11.Redis 的回收策略（淘汰策略）?
+
+12.为什么Redis 需要把所有数据放到内存中？
+
+13.Redis 的同步机制了解么？
+
+14.Pipeline 有什么好处，为什么要用 Pipeline？
+
+15.是否使用过 Redis 集群，集群的原理是什么？
+
+16.Redis 集群方案什么情况下会导致整个集群不可用？
+
+17.Redis 支持的 Java 客户端都有哪些？官方推荐用哪个？
+
+18.Jedis 与 Redisson 对比有什么优缺点？
+
+19.Redis 如何设置密码及验证密码？
+
+20.说说 Redis 哈希槽的概念？
+
+21.Redis 集群的主从复制模型是怎样的？
+
+22.Redis 集群会有写操作丢失吗？为什么？
+
+23.Redis 集群之间是如何复制的？
+
+24.Redis 集群最大节点个数是多少？
+
+25.Redis 集群如何选择数据库？
+
+26.怎么测试 Redis 的连通性？
+
+27.怎么理解 Redis 事务？
+
+28.Redis 事务相关的命令有哪几个？
+
+29.Redis key 的过期时间和永久有效分别怎么设置？
+
+30.Redis 如何做内存优化？
+
+31.Redis 回收进程如何工作的？
+
+32.都有哪些办法可以降低 Redis 的内存使用情况呢？
+
+33.Redis 的内存用完了会发生什么？
+
+34.一个 Redis 实例最多能存放多少的 keys？List、Set、Sorted Set他们最多能存放多少元素？
+
+35.MySQL 里有 2000w 数据，Redis 中只存 20w 的数据，如何保证Redis 中的数据都是热点数据？
+
+36.Redis 最适合的场景是什么？
+
+37.假如 Redis 里面有 1 亿个 key，其中有 10w 个 key 是以某个固定的已知的前缀开头的，如果将它们全部找出来？
+
+38.如果有大量的 key 需要设置同一时间过期，一般需要注意什么？
+
+39.使用过 Redis 做异步队列么，你是怎么用的？
+
+40.使用过 Redis 分布式锁么，它是什么回事？
+
+41.如何预防缓存穿透与雪崩？

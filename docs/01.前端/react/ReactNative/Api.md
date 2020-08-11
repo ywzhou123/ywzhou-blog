@@ -1,0 +1,345 @@
+---
+title: Api
+date: 2020-08-11 19:42:39
+permalink: /pages/ce43f1/
+categories: 
+  - react
+  - ReactNative
+tags: 
+  - 
+---
+## API
+
+### AppRegistry 注册
+
+```js
+registerConfig(config) //Array<AppConfig> 注册配置
+registerComponent(appKey, getComponentFunc) // 注册入口组件
+registerRunnable(appKey, func) // 注册函数监听
+getAppKeys() // 获取registerRunnable注册的监听键
+runApplication(appKey, appParameters) // 运行App，可打印日志
+```
+
+
+
+### AsyncStorage 存储
+
+- 简单异步的键值对存储系统，用于替代LocalStorage
+- 每个方法都有个回调函数，结果会传给回调函数
+
+```js
+getItem(key, callback(error, result)) // 查询键的值
+setItem(key, value, callback(error)) // 设置键值对
+removeItem(key,callback(error)) // 删除
+mergeItem(key, value, callback(error)) // 合并
+clear(callback(error)) // 清空
+getAllKeys(callback(error,result)) // 获取所有的键
+multiGet(keys, callback(error, result)) // 获取多项
+multiSet(keyValuePairs, callback(errors)) // 设置多项，keyValuePairs是二维数组
+multiRemove(keys, callback(errors)) // 删除多项
+multiMerge(keyValuePairs, callback(errors)) // 多个键值对合并，keyValuePairs是二维数组
+```
+
+
+
+
+
+###  AlertIOS 对话框
+
+```js
+alert(title, message, buttons) // 普通对话框
+prompt(title, value, buttons) // 提供输入的对话框
+//定义按钮数组，最后一个高亮，长度过长时垂直排列
+var buttons = [
+  {
+    text: '取消',
+    onPress: () => { } //按钮点击事件
+  },
+  {
+    text: '确认',
+    onPress: () => { } //按钮点击事件
+  },
+]
+var tip = () => {
+  AlertIOS.alert('提示', '选择学习React', buttons);
+}
+```
+
+
+
+### ActionSheetIOS 弹出多项选择操作和分享
+
+```js
+showActionSheetWithOptions(options, callback) // 弹出选择框
+showShareActionSheetWithOptions(options, failureCallback, successCallback) // 分享弹出框
+var tip = () => {
+  ActionSheetIOS.showActionSheetWithOptions({
+    options: [
+      '拨打电话',
+      '发送邮件',
+      '发送短信',
+      '取消',
+    ],
+    cancelButtonIndex: 3, // 取消按钮的索引
+    destructiveButtionIndex: 0, // 不能使用的按钮索引，即拨打电话不能使用
+  }, (index) => {
+    alert(index);
+  })
+}
+var share = () => {
+  ActionSheetIOS.showShareActionSheetWithOptions({
+    url: 'https://code.facebook,com',
+  },(err)=>{},(e)=>{})
+}
+```
+
+
+
+### PixelRatio 像素密度，解决不同屏幕尺寸问题
+
+```js
+get() // 获取像素密度
+    1   // mdpi Android devicess (160 dpi)
+    1.5 // hdpi Android devicess (240 dpi)
+    2   // iPhone 4,4s,5,5c,5s,6,hdpi Android devicess (320 dpi)
+    3   // iPhone 6p,xxhdpi Android devices (480 dpi)
+    3.5 // Nexus 6
+getPixelSizeForLayoutSize(number) // 获取一个布局元素的像素大小，返回一个四舍五入的int
+getFontScale() // 获取字体比例，目前只支持Android，等同 Dimensions.get('window').fontScale ；IOS还是用像素密度
+
+// 获取最细边框
+var style = { borderWidth: 1 / PixelRatio.get(),borderColor:'red' };
+// 自适应图片
+var image = getImage({
+  width: PixelRatio.getPixelSizeForLayoutSize(300),
+  height: PixelRatio.getPixelSizeForLayoutSize(200),
+})
+```
+
+
+
+### AppStateIOS 运行状态（前台、后台），也可用于做推送通知
+
+```js
+currentState // 获取当前App属性
+addEventListener(type, handler) //添加事件监听
+removeEventListener(type, handler) //删除事件监听
+
+AppStateIOS.addEventListener('change', () => {
+  //状态改变事件
+});
+AppStateIOS.addEventListener('memoryWarning', () => {
+  //内存报警事件
+});
+
+```
+
+
+
+### StatusBarIOS 改变App的状态栏（顶部显示时间电量一栏）
+
+ ```js
+setStyle(style, animated) // 设置状态栏的样式，style值为'default'、'light-content'；animated表示是否有动画过渡
+setHidden(hidden, animated) // 是否隐藏状态栏
+setNetworkActivityIndicatorVisible(visible) // 是否显示网络状态
+ ```
+
+
+
+### NetInfo 获取网络状态
+
+```js
+isConnected // 表示网络是否连接
+fetch() // 获取网络状态
+none // 离线状态
+wifi // 在线状态，通过WiFi、IOS模拟器连接
+cell // 网络连接，通过3G\WiMax\LTE连接
+unknown // 错误情况，状态未知
+addEventListener(eventName, handler) // 添加事件监听
+removeEventListener(eventName, handler) // 删除事件监听
+
+//获取连接类型
+NetInfo.fetch().done((type) => {
+  console.log(type);
+})
+//获取是否连接
+NetInfo.isConnected.fetch().done((isConnected) => {
+  console.log(isConnected);
+})
+//添加网络状态变化监听
+NetInfo.addEventListener('change', (type) => { })
+//获取是否连接
+NetInfo.isConnected.addEventListener('change', (type) => { })
+```
+
+
+
+### CameraRoll 照像机相关功能
+
+```js
+saveImageWithTag(tag, successCallback, errorCallback)  // 保存图片到相册
+getPhotos(params, callback, errorCallback) // 获取相册中的图片
+```
+
+
+
+#### 将网络图片保存到相册，这里保存了两张
+
+```js
+saveImageWithTag(tag, successCallback, errorCallback)  // 保存图片到相册
+getPhotos(params, callback, errorCallback) // 获取相册中的图片
+
+//将网络图片保存到相册，这里保存了两张
+var imgURL = 'http://vczero.github.io/lvtu/img/';
+<View>
+  <Text onPress={()=>this.saveImg('city.jpg','3.jpeg')}>
+    保存图片</Text>
+</View>
+saveImg = (img1, img2) => {
+  CameraRoll.saveImageWithTag(imgURL + img1, (url)=>{ //url是被保存图片的ID
+    if (url) {
+      var photos = this.state.photos;
+      photos.push(url);
+      this.setState({ photos });
+      CameraRoll.saveImageWithTag(imgURL + img2, (url) => {
+        this.setState({ photos });
+        photos.push(url);
+        console.log('保存成功');
+      })
+    }
+  },()=>{console.log('保存失败');})
+}
+//显示相册的图片
+var pm = {
+  first: 5, //获取数据的个数
+  groupTypes: 'All', //数据的分组类型，'All','Album','Event','Faces','Library','PhotoStream','SavedPhotos'
+  assetType: 'Photos', //资源类型，'Photos','Videos','All'
+};
+componentDidMount(){
+  CameraRoll.getPhotos(pm, (data) => {
+    var edges = data.edges;
+    var photos = [];
+    for (var i in edges) {
+      photos.push(edges[i].node.image.uri)
+    }
+    this.setState({ photos });
+  },()=>{console.log('获取失败');})
+};
+//获取成功的回调函数中的data
+data={
+  edges: [
+    {
+      node: {
+        timestamp: 140234392,
+        group_name: 'CameraRoll',
+        type: 'AlAssetTylePhoto',
+        image: {
+          isStored: true,
+          height: 1250,
+          width: 834,
+          uri: 'assets-library: //asset/asset.JPG?id=xxx',
+        }
+      }
+    }
+  ],
+  page_info: {
+    has_next_page: true,
+    start_cursor: 'assets-library: //asset/asset.JPG?id=xxx',
+    end_cursor: 'assets-library: //asset/asset.JPG?id=xxx'
+  }            
+}
+```
+
+
+
+### react-native-camera 调用摄像头,第三方库，需要安装和编译
+
+```jsx
+var Camera = require('react-native-camera');
+this.state = { cameraType: Camera.constants.Type.back}
+<Camera
+ref='cam'
+onBarCodeRead={this.onBarCodeRead}
+type = { this.state.cameraType } >
+  <Text>Welcome</Text>
+</Camera>
+```
+
+
+
+### VibrationIOS 振动效果
+
+​        vibrate() //设备振动1秒
+
+​        
+
+### Geolocation 地理定位，百度、高德
+
+```js
+getCurrentPosition(successCallback, errorCallback, GeoOptions) // 获取当前位置，GeoOptions属性如下
+timeout // 获取位置的超时时间，超时后调用errorCallback
+maximumAge // 重复定位间隔时间，毫秒
+enableHighAccuracy // 是否要求高精度的位置信息
+watchPosition(successCallback,errorCallback,GeoOptions) // 监测位置运动
+chearWatch(watchID) // 依据ID清除监测
+```
+
+
+
+### XMLHttpRequest 数据请求
+
+- 在RN中不存在跨域的限制，作为全局API
+
+```js
+ _doXMLHttpRequest = () => {
+   let request = new XMLHttpRequest();
+   request.onreadystatechange = (e) => {
+     if (request.readyState !== 4) {
+       return;
+     }
+     if (request.status === 200) {
+       console.log('success', request.responseText);
+     } else {
+       console.log('error');
+     }
+   };
+   request.open('GET', 'http://www.baidu.com/');
+   request.send();
+ }
+```
+
+
+
+
+
+### Fetch 数据请求
+
+ ```js
+_doFetchPost = (url,data,callback) => {
+  var opts = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  };
+  fetch(url,opts)
+    .then(data => data.text())
+    .then(text => { callback(JSON.parse(text)) })
+    .catch(error=>{console.log(error);})
+}
+ ```
+
+
+
+### 定时器
+
+```js
+setTimeout(fun, time) // time时间后执行fun
+setInterval(fun, time) // 用于设定循环境执行的任务，每隔time时间执行fun
+setImmediate(fun)  // 用于设置立即执行的任务
+
+requestAnimationFrame //进度条
+```
+

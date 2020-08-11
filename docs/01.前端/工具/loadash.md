@@ -1,0 +1,60 @@
+---
+title: Loadash工具库
+date: 2020-04-19 19:30:06
+tags: tool
+categories: tool
+permalink: /pages/f35115/
+---
+# 一、介绍
+[Loadash](https://www.lodashjs.com)
+
+Loadash是一个一致性、模块化、高性能的 JavaScript 实用工具库。
+通过降低 array、number、objects、string 等等的使用难度从而让 JavaScript 变得更简单。
+
+```shell
+npm i --save lodash
+```
+
+
+```js
+// Load the full build.
+var _ = require('lodash');
+// Load the core build.
+var _ = require('lodash/core');
+// Load the FP build for immutable auto-curried iteratee-first data-last methods.
+var fp = require('lodash/fp');
+// Load method categories.
+var array = require('lodash/array');
+var object = require('lodash/fp/object');
+// Cherry-pick methods for smaller browserify/rollup/webpack bundles.
+var at = require('lodash/at');
+var curryN = require('lodash/fp/curryN');
+```
+
+# 二、函数使用
+
+## 1、限制操作频率 debounced
+
+该函数会从上一次被调用后，延迟 wait 毫秒后调用 func 方法。
+
+```
+_.debounce(
+function () {
+var vm = this
+if (this.question.indexOf('?') === -1) {
+vm.answer = 'Questions usually contain a question mark. ;-)'
+return
+}
+vm.answer = 'Thinking...'
+axios.get('https://yesno.wtf/api')
+.then(function (response) {
+vm.answer = _.capitalize(response.data.answer)
+})
+.catch(function (error) {
+vm.answer = 'Error! Could not reach the API. ' + error
+})
+},
+// 这是我们为用户停止输入等待的毫秒数
+500
+)
+```
