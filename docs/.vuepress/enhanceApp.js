@@ -1,4 +1,4 @@
-import 'element-ui/lib/theme-chalk/index.css'
+// import 'element-ui/lib/theme-chalk/index.css'
 
 export default ({
   Vue,
@@ -6,14 +6,14 @@ export default ({
   router,
   siteData
 }) => {
-  Vue.mixin({
-    mounted() {
-      import('element-ui').then(m => {
-        Vue.use(m.default, {
-          size: 'mini',
-          menuType: 'text'
-        })
-      })
-    }
-  })
+  // Vue.mixin({
+  //   mounted() {
+  //     import('element-ui').then(m => {
+  //       Vue.use(m.default, {
+  //         size: 'mini',
+  //         menuType: 'text'
+  //       })
+  //     })
+  //   }
+  // })
 }
