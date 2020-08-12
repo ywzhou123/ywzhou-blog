@@ -1,12 +1,12 @@
 const nav = require('./nav.js');
 module.exports = {
-	title: 'Ywzhou 全栈技术博客',
+	title: '月晴星飞 全栈技术博客',
 	description: '前端技术、移动端技术、后端技术、运维技术等相关笔记及项目示例。JavaScript,js,ES6,TypeScript,vue,react,webchat,python,css3,html5,Node,devops等技术文章。',
   head: [
     ['link', { rel: 'icon', href: '/img/favicon.ico' }],
     ['meta', { name: 'keywords', content: '前端博客,个人技术博客,前端,前端开发,前端框架,web前端,前端面试题,技术文档,学习,面试,JavaScript,js,ES6,TypeScript,vue,python,css3,html5,Node,git,github,markdown'}],
     ['meta', { name: 'viewport', content: 'width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no'}],
-    ['meta', { name: 'baidu-site-verification', content: '7F55weZDDc'}],// 百度统计博主验证
+    ['meta', { name: 'baidu-site-verification', content: '7F55weZDDc'}],
     ['meta', { name: 'theme-color', content: '#11a8cd'}]
   ],
 	markdown: {
@@ -18,27 +18,27 @@ module.exports = {
 		nav,
     sidebar: 'structuring',
     logo: '/img/logo.png',
-    repo: 'https//gitee.com/ywzhou123/blog', // 导航栏右侧生成Github链接
+    repo: 'ywzhou123/ywzhou-blog',
     displayAllHeaders: false,
     sidebarDepth: 2,
     lastUpdated: '上次更新',
-    docsDir: 'docs', // 编辑的文件夹
-    editLinks: true, // 启用编辑
+    docsDir: 'docs',
+    editLinks: true,
     editLinkText: '编辑',
     searchMaxSuggestions: 10,
     bodyBgImg: [
-      'https://cdn.jsdelivr.net/gh/xugaoyi/image_store/blog/20200507175828.jpeg',
-      'https://cdn.jsdelivr.net/gh/xugaoyi/image_store/blog/20200507175845.jpeg',
-      'https://cdn.jsdelivr.net/gh/xugaoyi/image_store/blog/20200507175846.jpeg'
+      '/img/20200507175828.jpeg',
+      '/img/20200507175845.jpeg',
+      '/img/20200507175846.jpeg'
     ],
     author: {
-      name: 'ywzhou',
+      name: '月晴星飞',
       link: 'https://github.com/ywzhou123'
     },
     blogger: {
       avatar: 'https://cdn.jsdelivr.net/gh/xugaoyi/image_store/blog/20200103123203.jpg',
-      name: 'Ywzhou',
-      slogan: '不安分的coder'
+      name: '月晴星飞',
+      slogan: '一个不安分的电脑爱好者'
     },
     social:{
       icons: [
@@ -61,7 +61,7 @@ module.exports = {
     },
     footer: {
       createYear: 2020,
-      copyrightInfo: 'power by ywzhou'
+      copyrightInfo: 'power by 月晴星飞'
     }
 	},
   plugins: [
@@ -143,15 +143,15 @@ module.exports = {
       //   options: {
       //     clientID: 'a6e1355287947096b88b',
       //     clientSecret: 'f0e77d070fabfcd5af95bebb82b2d574d7248d71',
-      //     repo: 'blog', // GitHub 仓库
-      //     owner: 'ywzhou123', // GitHub仓库所有者
-      //     admin: ['ywzhou123'], // 对仓库有写权限的人
+      //     repo: 'ywzhou-blog',
+      //     owner: 'ywzhou123',
+      //     admin: ['ywzhou123'],
       //     // distractionFreeMode: true,
-      //     pagerDirection: 'last', // 'first'正序 | 'last'倒序
-      //     id: "<%- (frontmatter.permalink || frontmatter.to.path).slice(-16) %>", //  页面的唯一标识,长度不能超过50
-      //     title: "「评论」<%- frontmatter.title %>", // GitHub issue 的标题
-      //     labels: ["Gitalk", "Comment"], // GitHub issue 的标签
-      //     body:"页面：<%- window.location.origin + (frontmatter.to.path || window.location.pathname) %>" // GitHub issue 的内容
+      //     pagerDirection: 'last',
+      //     id: "<%- (frontmatter.permalink || frontmatter.to.path).slice(-16) %>",
+      //     title: "「评论」<%- frontmatter.title %>",
+      //     labels: ["Gitalk", "Comment"],
+      //     body:"页面：<%- window.location.origin + (frontmatter.to.path || window.location.pathname) %>"
       //   }
       // }
     ],
