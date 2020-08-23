@@ -1,7 +1,7 @@
 ---
 home: true
 # heroImage: /img/web.png
-heroText: 月晴星飞`s 技术博客
+heroText: 月晴星飞博客
 tagline: 不积跬步，无以至千里；不积小流，无以成江海。
 # actionText: 立刻进入 →
 # actionLink: /web/

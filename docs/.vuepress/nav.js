@@ -17,13 +17,12 @@ module.exports = [
         {text: '兼容性', link: '/pages/c44d14/'},
         {text: 'Flex', link: '/pages/29e3fc/'},
         {text: 'Svg', link: '/pages/551b41/'},
-      ]},
-      {text: '面试', link: '/pages/fea83b/'},
+      ]}
     ]
   },
   {
     text: 'JavaScript',
-    link: '/web/',
+    link: '/js/',
     items: [
       {text: 'JavaScript', items:[
         {text: '基础', link: '/pages/5b6748/'},
@@ -38,7 +37,7 @@ module.exports = [
   },
   {
     text: '前端框架', 
-    link: '/mobile/',
+    link: '/web/',
     items: [
       {text: 'Vue', link: '/pages/10277e/',
         items: [
@@ -108,6 +107,7 @@ module.exports = [
       {text: '工具', link: '/pages/e2f59f/'},
       {text: '项目', link: '/pages/72df87/'},
       {text: '收藏', link: '/pages/beb6c0bd8a66cea6/'},
+      {text: '面试', link: '/pages/fea83b/'},
       {text: '关于', link: '/about/'},
     ]
   },
