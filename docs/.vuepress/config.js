@@ -1,6 +1,6 @@
 const nav = require('./nav.js');
 module.exports = {
-	title: '月晴星飞 全栈技术博客',
+	title: '月晴星飞`s 技术博客',
 	description: '前端技术、移动端技术、后端技术、运维技术等相关笔记及项目示例。JavaScript,js,ES6,TypeScript,vue,react,webchat,python,css3,html5,Node,devops等技术文章。',
   head: [
     ['link', { rel: 'icon', href: '/img/favicon.ico' }],
@@ -36,7 +36,7 @@ module.exports = {
       link: 'https://github.com/ywzhou123'
     },
     blogger: {
-      avatar: 'https://cdn.jsdelivr.net/gh/xugaoyi/image_store/blog/20200103123203.jpg',
+      avatar: '/img/avator.jpg',
       name: '月晴星飞',
       slogan: '一个不安分的电脑爱好者'
     },

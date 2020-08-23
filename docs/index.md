@@ -8,6 +8,10 @@ tagline: 不积跬步，无以至千里；不积小流，无以成江海。
 # bannerBg: /img/20200507175828.jpeg
 
 features:
+  - title: 页面
+    details: html(5)/css(3)，前端页面相关技术
+    link: /ui/
+    imgUrl: /img/ui.png
   - title: 前端
     details: JavaScript、ES6、Vue、React、小程序等前端技术
     link: /web/
@@ -18,6 +22,10 @@ features:
     imgUrl: /img/other.png
   - title: 运维
     details: 邮箱、监控、部署、自动化运维等相关技术
-    link: /python/
+    link: /devops/
     imgUrl: /img/python.png
+  - title: 更多
+    details: 工具，以及关于我的一些项目、收藏链接等
+    link: /more/
+    imgUrl: /img/more.png
 

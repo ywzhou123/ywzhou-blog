@@ -40,8 +40,15 @@ module.exports = [
     text: '前端框架', 
     link: '/mobile/',
     items: [
-      {text: 'Vue', link: '/pages/10277e/'},
+      {text: 'Vue', link: '/pages/10277e/',
+        items: [
+          {text: 'ThVueComponent', link: '/pages/df9c4b/'},
+          {text: 'ThVueBusiness', link: '/pages/94fbe5/'},
+          {text: 'ThVueEcharts', link: '/pages/423b4b/'},
+        ]
+      },
       {text: 'React', link: '/pages/9748da/'},
+      {text: 'Mobile', link: '/pages/c2697c/'},
     ]
   },
   {
