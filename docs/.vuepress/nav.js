@@ -4,22 +4,15 @@ module.exports = [
     text: '页面',
     link: '/ui/',
     items: [
-      {text: 'Html', items:[
-        {text: 'dtd', link: '/pages/3f151f/'},
-        {text: 'html', link: '/pages/9b4665/'},
-        {text: 'html5', link: '/pages/3d7685/'},
-        {text: '属性', link: '/pages/dbf7c6/'},
-        {text: '事件', link: '/pages/e9eab2/'},
-        {text: 'meta', link: '/pages/e26a54/'},
-      ]},
+      {text: 'Html', link: '/pages/3f151f/'},
+      {text: 'Css', link: '/pages/8870b0/'},
+      {text: '兼容性', link: '/pages/c44d14/'},
       {text: 'Style', items:[
-        {text: 'Css', link: '/pages/8870b0/'},
-        {text: '兼容性', link: '/pages/c44d14/'},
         {text: 'Flex', link: '/pages/29e3fc/'},
         {text: 'Svg', link: '/pages/551b41/'},
         {text: '响应式', link: '/pages/bb7d65/'},
         {text: 'UI框架', link: '/pages/71980c/'},
-      ]}
+      ]},
     ]
   },
   {
@@ -37,16 +30,16 @@ module.exports = [
     link: '/web/',
     items: [
       {text: '开发环境', link: '/pages/64abbf/'},
-      {text: 'Vue', link: '/pages/857752/',
-        items: [
-          {text: 'ThVueComponent', link: '/pages/df9c4b/'},
-          {text: 'ThVueEcharts', link: '/pages/423b4b/'},
-        ]
-      },
+      {text: 'Vue', link: '/pages/857752/'},
       {text: 'VueRouter', link: '/pages/85e187/'},
       {text: 'Vuex', link: '/pages/e2c0d7/'},
       {text: 'React', link: '/pages/9748da/'},
+      {text: 'Redux', link: '/pages/ab703c/'},
+      {text: 'ReactNative', link: '/pages/f893bd/'},
       {text: 'Mobile', link: '/pages/c2697c/'},
+      {text: 'Webpack', link: '/pages/a9ae5c/'},
+      {text: 'ThVueComponent', link: '/pages/df9c4b/'},
+      {text: 'ThVueEcharts', link: '/pages/423b4b/'},
     ]
   },
   {
