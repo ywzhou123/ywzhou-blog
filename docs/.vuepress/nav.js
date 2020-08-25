@@ -17,6 +17,8 @@ module.exports = [
         {text: '兼容性', link: '/pages/c44d14/'},
         {text: 'Flex', link: '/pages/29e3fc/'},
         {text: 'Svg', link: '/pages/551b41/'},
+        {text: '响应式', link: '/pages/bb7d65/'},
+        {text: 'UI框架', link: '/pages/71980c/'},
       ]}
     ]
   },
@@ -24,13 +26,8 @@ module.exports = [
     text: 'JavaScript',
     link: '/js/',
     items: [
-      {text: 'JavaScript', items:[
-        {text: '基础', link: '/pages/5b6748/'},
-        {text: '教程', link: '/pages/d0b45d/'},
-        {text: '代码片段', link: '/pages/1b2262/'},
-      ]},
-      {text: 'ES6', link: '/pages/47315a/'},
-      {text: 'TypeScript', link: '/pages/f1bfac/'},
+      {text: 'JavaScript', link: '/pages/5b6748/'},
+      {text: 'ES6', link: '/pages/083cd9/'},
       {text: 'Mobile', link: '/pages/c9bbd1/'},
       {text: '浏览器', link: '/pages/ba7779/'},
     ]
@@ -39,13 +36,15 @@ module.exports = [
     text: '前端框架', 
     link: '/web/',
     items: [
-      {text: 'Vue', link: '/pages/10277e/',
+      {text: '开发环境', link: '/pages/64abbf/'},
+      {text: 'Vue', link: '/pages/857752/',
         items: [
           {text: 'ThVueComponent', link: '/pages/df9c4b/'},
-          {text: 'ThVueBusiness', link: '/pages/94fbe5/'},
           {text: 'ThVueEcharts', link: '/pages/423b4b/'},
         ]
       },
+      {text: 'VueRouter', link: '/pages/85e187/'},
+      {text: 'Vuex', link: '/pages/e2c0d7/'},
       {text: 'React', link: '/pages/9748da/'},
       {text: 'Mobile', link: '/pages/c2697c/'},
     ]
@@ -94,7 +93,6 @@ module.exports = [
     link: '/devops/',
     items: [
       {text: 'Postfix邮箱', link: '/pages/349bf6/'},
-      {text: 'Cacti+Nagios监控', link: '/pages/0dfcf1/'},
       {text: 'Zabbix监控', link: '/pages/c6d3a9/'},
       {text: 'Puppet部署', link: '/pages/ebb5e9/'},
       {text: 'OMS自动化运维', link: '/pages/6be380/'},
